@@ -23,6 +23,10 @@
   thead th{background:#f3f4f6;font-weight:600;}
   td.num{white-space:nowrap;}
   .note{background:var(--hl);border:1px solid var(--hl-border);border-radius:4px;padding:10px 14px;margin:12px 0 16px;font-size:14px;}
+  .summary{background:#fff;border:1px solid var(--line);border-left:4px solid var(--hl-border);border-radius:4px;padding:16px 20px;margin:0 0 30px;}
+  .summary .label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600;}
+  .summary p{font-size:15.5px;}
+  .summary p:last-child{margin-bottom:0;}
   .foot{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);}
 </style>
 </head>
@@ -30,7 +34,13 @@
 <div class="wrap">
   <p class="eyebrow">Methodology &middot; compiled August 2026</p>
   <h1>The Homebuying Income Gap, Corrected for Property Taxes</h1>
-  <p class="lede">How the companion evidence table was built: the source study, the proof that it excludes property taxes, the corrections applied, every data input with vintage, every formula, every assumption, and the direction of every known bias.</p>
+  <p class="lede">How the companion evidence tables were built: the source study, the proof that it excludes property taxes, the corrections applied, every data input with vintage, every formula, every assumption, and the direction of every known bias.</p>
+
+  <div class="summary">
+    <p class="label">In plain English</p>
+    <p>A widely shared 2026 study concluded that Illinois is the easiest state in the country for a median-income household to buy a typical home, with income to spare. That finding has a problem: the study's mortgage math counts only the loan payment itself &mdash; principal and interest &mdash; and leaves out property taxes, which are higher in Illinois than almost anywhere else. It also compares one statewide income to one statewide home price, an average that doesn't describe any actual community.</p>
+    <p>This analysis re-runs the study's own formula with property taxes added, using only public data, and applies it to real places &mdash; every Illinois county, plus Oak Park &mdash; alongside the 50 states. The picture changes substantially: far fewer states still show a surplus, Illinois's advantage shrinks by more than half, and some communities flip from &ldquo;affordable&rdquo; to a five-figure shortfall. Everything below documents each source, formula, and assumption so the work can be checked, and wherever a judgment call was required, the option chosen was the one that <em>understates</em> the problem.</p>
+  </div>
 
   <h2>1. What is being corrected</h2>
   <p>MoneyLion&rsquo;s 2026 Mortgage Stress Index (published July 21, 2026, data as of June 23, 2026) compares each state&rsquo;s median household income against the income needed to comfortably buy a typical home. It was popularized by Visual Capitalist (&ldquo;Mapped: The Homebuying Income Gap in Every U.S. State,&rdquo; August 17, 2026) and reported by Crain&rsquo;s Chicago Business, which framed Illinois&rsquo;s $20,002 surplus, the largest in the nation, as the state&rsquo;s affordability advantage.</p>
@@ -104,7 +114,7 @@
   <h2>8. Reproducibility</h2>
   <p>Every input is public: MoneyLion&rsquo;s published state table, Zillow&rsquo;s downloadable ZHVI files (state, county, and city single-family series), ACS 5-year tables B19013, B25090, B25082, and B25103 via the Census Bureau Application Programming Interface (API), and the Cook County Clerk&rsquo;s 2024 Tax Rate Report. The full 102-county Illinois companion table and the 53-row national table were generated from these sources with the formulas above and no other adjustments.</p>
 
-  <p class="foot">Companion evidence tables: &ldquo;The Homebuying Income Gap, Corrected for Property Taxes&rdquo; (53 rows, national) and &ldquo;Illinois Area-Matched Affordability Gap&rdquo; (102 counties). Source study: MoneyLion, &ldquo;The Mortgage Stress Index,&rdquo; July 21, 2026. Popularizations: Visual Capitalist, August 17, 2026; Crain&rsquo;s Chicago Business, August 2026.</p>
+  <p class="foot">Companion evidence tables: &ldquo;Homebuying Income Gap, Property Taxes Included&rdquo; (53 rows, national) and &ldquo;Illinois Area-Matched Affordability Gap&rdquo; (102 counties). Source study: MoneyLion, &ldquo;The Mortgage Stress Index,&rdquo; July 21, 2026. Popularizations: Visual Capitalist, August 17, 2026; Crain&rsquo;s Chicago Business, August 2026.</p>
 </div>
 </body>
 </html>

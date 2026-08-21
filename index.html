@@ -22,6 +22,8 @@ h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(26px,4vw,40px);l
 .card h2 .arrow{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:15px}
 .card p{font-size:13.5px;color:var(--muted);line-height:1.5;max-width:70ch}
 footer{margin-top:34px;padding-top:12px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.group{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--rule);padding-bottom:6px;margin:28px 0 14px}
+.group:first-of-type{margin-top:0}
 </style>
 </head>
 <body>
@@ -32,34 +34,32 @@ footer{margin-top:34px;padding-top:12px;border-top:1px solid var(--rule);font-fa
   <p class="dek">A set of evidence tables examining housing affordability and the homebuying income gap — from Chicago's western suburbs to all 50 states — with corrections for property taxes and a full methodology.</p>
 </header>
 
+<div class="group">Local Scorecard</div>
+
 <a class="card" href="west-suburban-housing-scorecard.html">
   <div class="kicker">Scorecard &middot; Chicago area</div>
   <h2>West Suburban Housing Scorecard <span class="arrow">&rarr;</span></h2>
   <p>Affordability share, tax burden, home values, housing stock, appreciation, population, and demographics for 26 Chicago-area municipalities. Sortable by any column; Oak Park highlighted.</p>
 </a>
 
-<a class="card" href="il_affordability_gap_scorecard.html">
-  <div class="kicker">Evidence table &middot; Illinois</div>
-  <h2>Illinois Area-Matched Affordability Gap <span class="arrow">&rarr;</span></h2>
-  <p>Re-runs MoneyLion's 2026 Mortgage Stress Index formula area-matched for all 102 Illinois counties, rather than from statewide medians with principal-and-interest costs only.</p>
-</a>
-
-<a class="card" href="national_gap_with_property_taxes.html">
-  <div class="kicker">Evidence table &middot; National</div>
-  <h2>The Homebuying Income Gap, Corrected for Property Taxes <span class="arrow">&rarr;</span></h2>
-  <p>Adds each state's effective property tax on its typical single-family home to the MoneyLion gap calculation, which counts principal-and-interest mortgage costs only.</p>
-</a>
-
-<a class="card" href="state_gap_with_property_taxes.html">
-  <div class="kicker">Evidence table &middot; State comparison</div>
-  <h2>Homebuying Income Gap, With and Without Property Taxes <span class="arrow">&rarr;</span></h2>
-  <p>Takes the five largest published deficits and five largest published surpluses and shows how the ranking changes once property taxes are included.</p>
-</a>
+<div class="group">The Homebuying Income Gap</div>
 
 <a class="card" href="methodology_gap_analysis.html">
   <div class="kicker">Methodology</div>
   <h2>Methodology: The Homebuying Income Gap, Corrected for Property Taxes <span class="arrow">&rarr;</span></h2>
   <p>How the evidence tables were built: the source study, the proof that it excludes property taxes, the corrections applied, every data input with vintage, every formula, and the direction of every known bias.</p>
+</a>
+
+<a class="card" href="national_gap_with_property_taxes.html">
+  <div class="kicker">Evidence table &middot; National</div>
+  <h2>Homebuying Income Gap, Property Taxes Included <span class="arrow">&rarr;</span></h2>
+  <p>Adds each state's effective property tax on its typical single-family home to the MoneyLion gap calculation, which counts principal-and-interest mortgage costs only.</p>
+</a>
+
+<a class="card" href="il_affordability_gap_scorecard.html">
+  <div class="kicker">Evidence table &middot; Illinois</div>
+  <h2>Illinois Area-Matched Affordability Gap <span class="arrow">&rarr;</span></h2>
+  <p>Re-runs MoneyLion's 2026 Mortgage Stress Index formula area-matched for all 102 Illinois counties, rather than from statewide medians with principal-and-interest costs only.</p>
 </a>
 
 <footer>Compiled August 2026</footer>
