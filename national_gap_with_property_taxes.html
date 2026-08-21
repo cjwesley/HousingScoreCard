@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Homebuying Income Gap, Corrected for Property Taxes</title>
+<style>
+  :root{
+    --ink:#1a2332; --muted:#6b7686; --line:#dfe3ea; --bg:#fbfbf9;
+    --hl:#fff7dc; --hl-border:#e8c84a;
+    --loc:#eef3f8;
+    --good-bg:#e3f2e6; --good-ink:#1e6b34;
+    --bad-bg:#fbe4e2; --bad-ink:#a1352c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 60px;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1120px;margin:0 auto;}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;}
+  h1{font-size:28px;margin:0 0 10px;font-weight:700;}
+  .desc{max-width:78ch;color:#3a4454;margin:0 0 18px;}
+  .filters{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:0 0 14px;font-size:14px;}
+  .filters label{color:var(--muted);}
+  .filters input{width:110px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;font-size:14px;background:#fff;}
+  .filters button{padding:5px 12px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;}
+  .filters button:hover{background:#f1f2f4;}
+  .sortnote{font-size:13px;color:var(--muted);margin:0 0 8px;}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:#fff;max-height:72vh;overflow-y:auto;}
+  table{border-collapse:collapse;width:100%;min-width:960px;font-size:13.5px;}
+  th,td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{background:#f3f4f6;font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;z-index:2;}
+  thead th:hover{background:#e9ebee;}
+  thead th .arr{color:var(--muted);font-size:11px;margin-left:3px;}
+  tbody tr{background:#fff;}
+  tbody tr:nth-child(even){background:#f8f9fa;}
+  tbody tr.op{background:var(--hl);outline:2px solid var(--hl-border);outline-offset:-2px;font-weight:600;}
+  tbody tr.cook, tbody tr.peoria{background:var(--loc);font-weight:600;}
+  td.best{background:var(--good-bg);color:var(--good-ink);font-weight:600;}
+  td.worst{background:var(--bad-bg);color:var(--bad-ink);font-weight:600;}
+  td.neg{color:var(--bad-ink);}
+  td.pos{color:var(--good-ink);}
+  td.rk{color:var(--muted);font-size:12.5px;}
+  .sources{margin-top:22px;font-size:12.5px;color:#4a5464;max-width:104ch;line-height:1.55;}
+  .sources b{color:var(--ink);}
+  @media (max-width:640px){ h1{font-size:22px} body{padding:18px 10px 40px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Evidence table &middot; compiled August 2026</p>
+  <h1>The Homebuying Income Gap, Corrected for Property Taxes</h1>
+  <p class="desc">MoneyLion&rsquo;s 2026 Mortgage Stress Index computes each state&rsquo;s homebuying income gap from principal-and-interest mortgage costs only, excluding property taxes. This table adds each state&rsquo;s effective property tax on its typical single-family home for all 50 states, and places three Illinois geographies (Cook County, Peoria County, and Oak Park, shaded) on the same scale using the identical formula. Click any column header to sort. Oak Park is highlighted. With taxes included, the 13-state surplus club shrinks to 6, Illinois falls from #1 to #2 behind West Virginia, and Oak Park, at −$26,841, would rank 32nd if it were a state, less affordable on this measure than every Midwest state except South Dakota. All 53 rows use one identical tax measurement; Oak Park&rsquo;s higher statutory new-buyer rate is disclosed in the notes.</p>
+  <div class="filters">
+    <label>Gap + tax &ge; <input type="number" id="fGap" placeholder="any" step="5000"></label>
+    <label>Eff. tax % &le; <input type="number" id="fRate" placeholder="any" step="0.25"></label>
+    <button id="clearBtn">Clear filters</button>
+  </div>
+  <p class="sortnote">Sorted by: <span id="sortLabel">Gap + tax (desc)</span></p>
+  <div class="tblwrap">
+  <table id="tbl">
+    <thead><tr>
+      <th data-k="area" data-t="s">Area<span class="arr"></span></th>
+      <th data-k="inc" data-t="n">Med. income<span class="arr"></span></th>
+      <th data-k="zhvi" data-t="n">SFR value<span class="arr"></span></th>
+      <th data-k="rate" data-t="n">Eff. tax %<span class="arr"></span></th>
+      <th data-k="anntax" data-t="n">Annual tax<span class="arr"></span></th>
+      <th data-k="g0" data-t="n">Gap (P&amp;I)<span class="arr"></span></th>
+      <th data-k="r0" data-t="n">Rk<span class="arr"></span></th>
+      <th data-k="g1" data-t="n">Gap + tax<span class="arr"></span></th>
+      <th data-k="r1" data-t="n">Rk<span class="arr"></span></th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="sources"><b>Sources.</b> State median household incomes and Gap (P&amp;I): MoneyLion, 2026 Mortgage Stress Index (July 21, 2026), which assumes a 10% down payment, the 6.47% national average 30-year fixed rate as of May 23, 2026, and the 50/30/20 rule with essentials capped at 50% of income; MoneyLion&rsquo;s own published payment examples (Maryland $2,461, Massachusetts $3,784) reproduce exactly as pure principal and interest at those terms (a third worked example, Hawaii, is omitted because its cited home value could not be re-verified against the archived study text), confirming the mortgage-payment component excludes property taxes and insurance. State home values: Zillow ZHVI, single-family mid-tier, seasonally adjusted, June 2026, matching MoneyLion&rsquo;s data-as-of date of June 23, 2026. Effective property tax rates: U.S. Census Bureau, ACS 2023 5-year, aggregate real estate taxes paid (B25090) divided by aggregate value of owner-occupied homes (B25082), computed identically for every row, state and local; aggregates avoid the $10,000 top-code that caps ACS median tax figures. These are incumbent rates: they reflect current owners after exemptions, assessment lag, and appeals. Where those mechanisms are significant a new buyer faces more; that wedge is quantified in this analysis only for Oak Park (incumbent 2.44% versus a 3.40% statutory new-buyer rate), and the with-tax gaps are conservative to that extent. Gap + tax = Gap (P&amp;I) &minus; 2 &times; (effective rate &times; SFR value); the doubling follows from the 50% essentials cap, under which each dollar of added essential cost raises income needed by two dollars. The three shaded Illinois rows are not MoneyLion-published: they apply the same formula to local inputs (ACS 2023 5-year incomes scaled to 2026 by the 1.0207 factor implied by MoneyLion&rsquo;s Illinois income versus the ACS statewide figure; county and city SFR ZHVI, July 2026; a statewide living-expense constant of $11,043/yr backed out of MoneyLion&rsquo;s published Illinois income-needed figure and the June 2026 Illinois single-family ZHVI shown in this table; MoneyLion&rsquo;s exact Illinois home-value input is unpublished, so this constant absorbs any difference between their input and the ZHVI used here), so their county and village living costs are approximated at the state level. For Oak Park the incumbent aggregate rate is 2.44%; the statutory new-buyer rate from the Cook County Clerk&rsquo;s 2024 Tax Rate Report (11.205% composite for a pure District 97 + OPRF parcel &times; 10% residential assessment level &times; 3.0355 state equalizer) is 3.40% pre-exemption, which would put the Oak Park gap at &minus;$38,750 pre-exemption or &minus;$36,509 with the $10,000-EAV homeowner exemption; it is disclosed here rather than mixed into the table so that every row carries the same measurement. The effective rate is an all-owner-occupied proxy (the ACS aggregate universe includes condominiums, townhomes, and attached homes) applied to a single-family value; the same proxy is applied identically to every row. Rank columns (Rk) rank the 50 states only; local rows are unranked. Green marks the best value in a column, red the worst, computed across states only.</p>
+</div>
+<script>
+const DATA = [{"area": "Hawaii", "cls": "state", "inc": 100389, "zhvi": 975383, "rate": 0.002957698357449191, "anntax": 2885, "g0": -116053, "g1": -121823, "r0": 50, "r1": 50}, {"area": "Rhode Island", "cls": "state", "inc": 87796, "zhvi": 525674, "rate": 0.011918213559753902, "anntax": 6265, "g0": -52057, "g1": -64587, "r0": 47, "r1": 48}, {"area": "California", "cls": "state", "inc": 99122, "zhvi": 797603, "rate": 0.006995507189873527, "anntax": 5580, "g0": -74928, "g1": -86087, "r0": 49, "r1": 49}, {"area": "Florida", "cls": "state", "inc": 74568, "zhvi": 400091, "rate": 0.007987152864467328, "anntax": 3196, "g0": -24746, "g1": -31137, "r0": 33, "r1": 33}, {"area": "New Jersey", "cls": "state", "inc": 103556, "zhvi": 602450, "rate": 0.019798749694199036, "anntax": 11928, "g0": -26162, "g1": -50018, "r0": 34, "r1": 42}, {"area": "Nevada", "cls": "state", "inc": 78260, "zhvi": 466594, "rate": 0.005126660755087279, "anntax": 2392, "g0": -42832, "g1": -47616, "r0": 44, "r1": 41}, {"area": "Connecticut", "cls": "state", "inc": 95781, "zhvi": 481210, "rate": 0.016153295688025055, "anntax": 7773, "g0": -41598, "g1": -57144, "r0": 43, "r1": 45}, {"area": "Louisiana", "cls": "state", "inc": 60756, "zhvi": 218374, "rate": 0.005374695742719307, "anntax": 1174, "g0": 2652, "g1": 305, "r0": 9, "r1": 6}, {"area": "Massachusetts", "cls": "state", "inc": 103960, "zhvi": 693054, "rate": 0.010288388492467437, "anntax": 7130, "g0": -41076, "g1": -55337, "r0": 42, "r1": 44}, {"area": "Mississippi", "cls": "state", "inc": 56447, "zhvi": 195929, "rate": 0.006037489550350912, "anntax": 1183, "g0": -3980, "g1": -6346, "r0": 20, "r1": 16}, {"area": "Oregon", "cls": "state", "inc": 83011, "zhvi": 510363, "rate": 0.008289625334155356, "anntax": 4231, "g0": -43424, "g1": -51885, "r0": 45, "r1": 43}, {"area": "New York", "cls": "state", "inc": 85974, "zhvi": 502937, "rate": 0.013099144028865079, "anntax": 6588, "g0": -6894, "g1": -20070, "r0": 23, "r1": 30}, {"area": "Montana", "cls": "state", "inc": 72509, "zhvi": 478007, "rate": 0.006407998835650291, "anntax": 3063, "g0": -53307, "g1": -59433, "r0": 48, "r1": 46}, {"area": "New Mexico", "cls": "state", "inc": 64059, "zhvi": 321381, "rate": 0.006162255975145255, "anntax": 1980, "g0": -29320, "g1": -33281, "r0": 37, "r1": 34}, {"area": "Delaware", "cls": "state", "inc": 84954, "zhvi": 409076, "rate": 0.0054814015303223445, "anntax": 2242, "g0": -5599, "g1": -10084, "r0": 21, "r1": 21}, {"area": "Maine", "cls": "state", "inc": 74733, "zhvi": 418613, "rate": 0.010444524291151721, "anntax": 4372, "g0": -28929, "g1": -37673, "r0": 36, "r1": 37}, {"area": "New Hampshire", "cls": "state", "inc": 99031, "zhvi": 540680, "rate": 0.016160146378935654, "anntax": 8737, "g0": -46752, "g1": -64227, "r0": 46, "r1": 47}, {"area": "Colorado", "cls": "state", "inc": 95470, "zhvi": 552968, "rate": 0.004983396381083341, "anntax": 2756, "g0": -31422, "g1": -36933, "r0": 39, "r1": 36}, {"area": "Utah", "cls": "state", "inc": 95166, "zhvi": 551052, "rate": 0.004960409010929393, "anntax": 2733, "g0": -33487, "g1": -38954, "r0": 41, "r1": 38}, {"area": "Arizona", "cls": "state", "inc": 79964, "zhvi": 431746, "rate": 0.005108605825107888, "anntax": 2206, "g0": -14929, "g1": -19340, "r0": 31, "r1": 29}, {"area": "Idaho", "cls": "state", "inc": 77800, "zhvi": 480757, "rate": 0.005338692388685559, "anntax": 2567, "g0": -29890, "g1": -35023, "r0": 38, "r1": 35}, {"area": "Washington", "cls": "state", "inc": 98141, "zhvi": 616340, "rate": 0.007722525541092434, "anntax": 4760, "g0": -32405, "g1": -41924, "r0": 40, "r1": 40}, {"area": "South Carolina", "cls": "state", "inc": 69324, "zhvi": 310684, "rate": 0.005083867187908361, "anntax": 1579, "g0": -10463, "g1": -13622, "r0": 27, "r1": 24}, {"area": "Georgia", "cls": "state", "inc": 77353, "zhvi": 337373, "rate": 0.008161555022804572, "anntax": 2753, "g0": 2658, "g1": -2849, "r0": 8, "r1": 10}, {"area": "South Dakota", "cls": "state", "inc": 75081, "zhvi": 326506, "rate": 0.010257206079813208, "anntax": 3349, "g0": -23592, "g1": -30290, "r0": 32, "r1": 32}, {"area": "Texas", "cls": "state", "inc": 78476, "zhvi": 303996, "rate": 0.014731089899895902, "anntax": 4478, "g0": 4560, "g1": -4396, "r0": 7, "r1": 12}, {"area": "Pennsylvania", "cls": "state", "inc": 77971, "zhvi": 290224, "rate": 0.013146719347748454, "anntax": 3815, "g0": -2253, "g1": -9884, "r0": 18, "r1": 20}, {"area": "North Carolina", "cls": "state", "inc": 72388, "zhvi": 341114, "rate": 0.006935341152305874, "anntax": 2366, "g0": -10738, "g1": -15469, "r0": 28, "r1": 25}, {"area": "Vermont", "cls": "state", "inc": 81203, "zhvi": 410578, "rate": 0.01582963553185359, "anntax": 6499, "g0": -27571, "g1": -40570, "r0": 35, "r1": 39}, {"area": "North Dakota", "cls": "state", "inc": 76657, "zhvi": 298293, "rate": 0.009172207847766822, "anntax": 2736, "g0": -6867, "g1": -12339, "r0": 22, "r1": 23}, {"area": "Oklahoma", "cls": "state", "inc": 65039, "zhvi": 224597, "rate": 0.008007846179293636, "anntax": 1799, "g0": 5482, "g1": 1885, "r0": 6, "r1": 5}, {"area": "Alabama", "cls": "state", "inc": 63999, "zhvi": 238969, "rate": 0.00366950535173575, "anntax": 877, "g0": 666, "g1": -1088, "r0": 12, "r1": 8}, {"area": "Wyoming", "cls": "state", "inc": 76176, "zhvi": 369540, "rate": 0.005150044753700702, "anntax": 1903, "g0": -13811, "g1": -17617, "r0": 30, "r1": 27}, {"area": "Kentucky", "cls": "state", "inc": 63726, "zhvi": 234874, "rate": 0.007570382888486979, "anntax": 1778, "g0": -2354, "g1": -5910, "r0": 19, "r1": 14}, {"area": "Arkansas", "cls": "state", "inc": 60773, "zhvi": 225371, "rate": 0.0057360172861224065, "anntax": 1293, "g0": 584, "g1": -2001, "r0": 13, "r1": 9}, {"area": "Indiana", "cls": "state", "inc": 71957, "zhvi": 261792, "rate": 0.007718804016976978, "anntax": 2021, "g0": 6499, "g1": 2458, "r0": 5, "r1": 4}, {"area": "Maryland", "cls": "state", "inc": 103678, "zhvi": 449570, "rate": 0.009473799326812351, "anntax": 4259, "g0": 13201, "g1": 4683, "r0": 3, "r1": 3}, {"area": "Tennessee", "cls": "state", "inc": 69595, "zhvi": 337789, "rate": 0.005560038447447759, "anntax": 1878, "g0": -7656, "g1": -11412, "r0": 24, "r1": 22}, {"area": "Michigan", "cls": "state", "inc": 72875, "zhvi": 266916, "rate": 0.012282914629778057, "anntax": 3279, "g0": -562, "g1": -7119, "r0": 15, "r1": 17}, {"area": "Kansas", "cls": "state", "inc": 74275, "zhvi": 251477, "rate": 0.012246227817112052, "anntax": 3080, "g0": -1261, "g1": -7420, "r0": 17, "r1": 18}, {"area": "Alaska", "cls": "state", "inc": 92788, "zhvi": 417671, "rate": 0.009545828319960677, "anntax": 3987, "g0": -9807, "g1": -17781, "r0": 26, "r1": 28}, {"area": "Nebraska", "cls": "state", "inc": 76475, "zhvi": 283519, "rate": 0.014774862164385585, "anntax": 4189, "g0": -8431, "g1": -16809, "r0": 25, "r1": 26}, {"area": "Illinois", "cls": "state", "inc": 83390, "zhvi": 303466, "rate": 0.01914397631487327, "anntax": 5810, "g0": 20002, "g1": 8383, "r0": 1, "r1": 2}, {"area": "Virginia", "cls": "state", "inc": 93170, "zhvi": 425685, "rate": 0.007945981883392498, "anntax": 3382, "g0": 904, "g1": -5861, "r0": 11, "r1": 13}, {"area": "Missouri", "cls": "state", "inc": 70702, "zhvi": 270877, "rate": 0.009110357525314557, "anntax": 2468, "g0": -1141, "g1": -6077, "r0": 16, "r1": 15}, {"area": "Wisconsin", "cls": "state", "inc": 77485, "zhvi": 347647, "rate": 0.0139419551681685, "anntax": 4847, "g0": -13786, "g1": -23480, "r0": 29, "r1": 31}, {"area": "Ohio", "cls": "state", "inc": 71389, "zhvi": 253758, "rate": 0.014110276681542496, "anntax": 3581, "g0": 6578, "g1": -583, "r0": 4, "r1": 7}, {"area": "West Virginia", "cls": "state", "inc": 59608, "zhvi": 177939, "rate": 0.00511046496308263, "anntax": 909, "g0": 16451, "g1": 14632, "r0": 2, "r1": 1}, {"area": "Iowa", "cls": "state", "inc": 75059, "zhvi": 244694, "rate": 0.013646890259597368, "anntax": 3339, "g0": 2433, "g1": -4246, "r0": 10, "r1": 11}, {"area": "Minnesota", "cls": "state", "inc": 89062, "zhvi": 363325, "rate": 0.0101225237636814, "anntax": 3678, "g0": -345, "g1": -7701, "r0": 14, "r1": 19}, {"area": "Cook County, IL", "cls": "cook", "inc": 83487, "zhvi": 368664, "rate": 0.017505284236115075, "anntax": 6454, "g0": 11225, "g1": -1682, "r0": null, "r1": null, "hyp_rank": 9}, {"area": "Peoria County, IL", "cls": "peoria", "inc": 66280, "zhvi": 167372, "rate": 0.021763932984784188, "anntax": 3643, "g0": 21414, "g1": 14129, "r0": null, "r1": null, "hyp_rank": 2}, {"area": "Oak Park, IL", "cls": "op", "inc": 110258, "zhvi": 621778, "rate": 0.024436716125801262, "anntax": 15194, "g0": 3547, "g1": -26841, "r0": null, "r1": null, "hyp_rank": 32}];
+let sortKey="g1", sortDir=-1;
+const fmt$ = v => (v<0?"\u2212$":"$")+Math.abs(Math.round(v)).toLocaleString();
+const fmtGap = v => (v>0?"+$":v<0?"\u2212$":"$")+Math.abs(Math.round(v)).toLocaleString();
+const hiBest=["inc","g0","g1"], loBest=["zhvi","rate","anntax"];
+const states=DATA.filter(d=>d.cls==="state");
+const extremes={best:{},worst:{}};
+for(const k of [...hiBest,...loBest]){
+  let bi=0, wi=0;
+  states.forEach((d,i)=>{
+    if(hiBest.includes(k) ? d[k]>states[bi][k] : d[k]<states[bi][k]) bi=i;
+    if(hiBest.includes(k) ? d[k]<states[wi][k] : d[k]>states[wi][k]) wi=i;
+  });
+  extremes.best[k]=states[bi].area; extremes.worst[k]=states[wi].area;
+}
+function render(){
+  const fgRaw=document.getElementById("fGap").value, frRaw=document.getElementById("fRate").value;
+  const fg=fgRaw===""?null:parseFloat(fgRaw), fr=frRaw===""?null:parseFloat(frRaw)/100;
+  let rows=DATA.filter(d=>(fg===null||d.g1>=fg)&&(fr===null||d.rate<=fr));
+  rows.sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if(va===null) return 1; if(vb===null) return -1;
+    if(typeof va==="string") return sortDir*va.localeCompare(vb);
+    return sortDir*(va-vb);
+  });
+  const tb=document.querySelector("#tbl tbody");
+  tb.innerHTML=rows.map(d=>{
+    const cell=(k,txt,extra)=>{
+      let cls=extra||"";
+      if(d.cls==="state"){
+        if(extremes.best[k]===d.area) cls="best";
+        else if(extremes.worst[k]===d.area) cls="worst";
+      }
+      if((k==="g0"||k==="g1") && !["best","worst"].includes(cls)) cls += (d[k]<0?" neg":" pos");
+      return `<td class="${cls.trim()}">${txt}</td>`;
+    };
+    return `<tr class="${d.cls}">`+
+      `<td>${d.area}</td>`+
+      cell("inc",fmt$(d.inc))+
+      cell("zhvi",fmt$(d.zhvi))+
+      cell("rate",(d.rate*100).toFixed(2)+"%")+
+      cell("anntax",fmt$(d.anntax))+
+      cell("g0",fmtGap(d.g0))+
+      `<td class="rk">${d.r0??"\u2013"}</td>`+
+      cell("g1",fmtGap(d.g1))+
+      `<td class="rk">${d.r1??"\u2013"}</td>`+
+    `</tr>`;
+  }).join("");
+  const labels={area:"Area",inc:"Med. income",zhvi:"SFR value",rate:"Eff. tax %",anntax:"Annual tax",g0:"Gap (P&I)",r0:"Rank (P&I)",g1:"Gap + tax",r1:"Rank (+tax)"};
+  document.getElementById("sortLabel").textContent = labels[sortKey]+" ("+(sortDir===1?"asc":"desc")+")";
+  document.querySelectorAll("thead th").forEach(th=>{
+    th.querySelector(".arr").textContent = th.dataset.k===sortKey ? (sortDir===1?"\u25B2":"\u25BC") : "";
+  });
+}
+document.querySelectorAll("thead th").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.k;
+    if(sortKey===k) sortDir*=-1;
+    else { sortKey=k; sortDir = th.dataset.t==="s"?1:-1; }
+    render();
+  });
+});
+["fGap","fRate"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+document.getElementById("clearBtn").addEventListener("click",()=>{
+  document.getElementById("fGap").value=""; document.getElementById("fRate").value=""; render();
+});
+render();
+</script>
+</body>
+</html>

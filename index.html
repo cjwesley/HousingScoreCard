@@ -3,171 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>West Suburban Housing Scorecard</title>
+<title>Housing Affordability Analyses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#16212b;--paper:#fbfaf7;--rule:#d8d4c9;--op:#fdf3cf;--op-edge:#e4c94e;--hi:#8c1d18;--lo:#1d5c3f;--muted:#6b7178}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:'Libre Franklin',sans-serif;font-size:14px;padding:28px 18px 60px}
-.wrap{max-width:1380px;margin:0 auto}
-header{border-bottom:3px double var(--ink);padding-bottom:14px;margin-bottom:6px}
+body{background:var(--paper);color:var(--ink);font-family:'Libre Franklin',sans-serif;font-size:15px;padding:28px 18px 60px}
+.wrap{max-width:860px;margin:0 auto}
+header{border-bottom:3px double var(--ink);padding-bottom:14px;margin-bottom:26px}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(24px,4vw,38px);line-height:1.05;margin:6px 0 4px}
+h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.05;margin:6px 0 4px}
 .dek{font-size:14px;color:var(--muted);max-width:75ch}
-.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:14px 0 10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
-.controls .hint{color:var(--muted)}
-.filter{display:flex;flex-direction:column;gap:3px}
-.filter label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.filter input{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 8px;border:1px solid var(--rule);background:#fff;width:130px;color:var(--ink)}
-.filter input:focus{outline:2px solid var(--op-edge);outline-offset:-1px}
-.count{color:var(--muted);padding-bottom:6px}
-.clearbtn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:6px 10px;border:1px solid var(--rule);background:#fff;cursor:pointer;color:var(--ink)}
-.clearbtn:hover{background:#f2efe6}
-.sortline{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
-.sortline .hint{color:var(--muted)}
-.tablebox{overflow-x:auto;border:1px solid var(--rule);background:#fff}
-table{border-collapse:collapse;width:100%;min-width:1280px}
-thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;text-align:right;padding:10px 8px 8px;border-bottom:2px solid var(--ink);cursor:pointer;user-select:none;white-space:nowrap;background:#fff;position:sticky;top:0}
-thead th:first-child{text-align:left}
-thead th:hover{background:#f2efe6}
-thead th .arr{display:inline-block;width:1em;color:var(--muted)}
-thead th.active{color:#000}
-thead th.active .arr{color:var(--ink)}
-thead th.demo{border-left:1px solid var(--rule)}
-tbody td{padding:8px 8px;text-align:right;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;font-family:'IBM Plex Mono',monospace;font-size:12px}
-tbody td:first-child{text-align:left;font-family:'Libre Franklin',sans-serif;font-weight:600;font-size:13px;white-space:nowrap}
-tbody td.demo{border-left:1px solid var(--rule)}
-tbody tr:hover{background:#f5f3ec}
-tbody tr.op{background:var(--op);box-shadow:inset 3px 0 0 var(--op-edge)}
-tbody tr.op:hover{background:#fbedb8}
-td.best{color:var(--lo);font-weight:600}
-td.worst{color:var(--hi);font-weight:600}
-td.na{color:#b6b2a6}
-.rank{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding-right:2px}
-footer{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;max-width:110ch}
-footer b{color:var(--ink)}
-@media (max-width:640px){body{padding:16px 8px 40px}.filter input{width:110px}}
+.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule);background:#fff;padding:18px 20px;margin-bottom:14px;transition:border-color .12s,box-shadow .12s}
+.card:hover{border-color:var(--ink);box-shadow:3px 3px 0 var(--rule)}
+.card .kicker{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.card h2{font-family:'Fraunces',serif;font-weight:600;font-size:20px;line-height:1.2;margin-bottom:6px}
+.card h2 .arrow{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:15px}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.5;max-width:70ch}
+footer{margin-top:34px;padding-top:12px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Evidence table &middot; compiled August 2026</div>
-  <h1>West Suburban Housing Scorecard</h1>
-  <div class="dek">Affordability share, tax burden, home values, housing stock, appreciation, population, and demographics for 26 Chicago-area municipalities. Click any column header to sort. Oak Park is highlighted.</div>
+  <div class="eyebrow">Evidence tables &amp; methodology &middot; compiled August 2026</div>
+  <h1>Housing Affordability Analyses</h1>
+  <p class="dek">A set of evidence tables examining housing affordability and the homebuying income gap — from Chicago's western suburbs to all 50 states — with corrections for property taxes and a full methodology.</p>
 </header>
-<div class="controls">
-  <div class="filter"><label for="fpop">Population &ge;</label><input id="fpop" type="number" min="0" step="1000" placeholder="e.g. 10000"></div>
-  <div class="filter"><label for="funits">Housing units &ge;</label><input id="funits" type="number" min="0" step="1000" placeholder="e.g. 5000"></div>
-  <button class="clearbtn" id="fclear">Clear filters</button>
-  <span class="count" id="count"></span>
+
+<a class="card" href="west-suburban-housing-scorecard.html">
+  <div class="kicker">Scorecard &middot; Chicago area</div>
+  <h2>West Suburban Housing Scorecard <span class="arrow">&rarr;</span></h2>
+  <p>Affordability share, tax burden, home values, housing stock, appreciation, population, and demographics for 26 Chicago-area municipalities. Sortable by any column; Oak Park highlighted.</p>
+</a>
+
+<a class="card" href="il_affordability_gap_scorecard.html">
+  <div class="kicker">Evidence table &middot; Illinois</div>
+  <h2>Illinois Area-Matched Affordability Gap <span class="arrow">&rarr;</span></h2>
+  <p>Re-runs MoneyLion's 2026 Mortgage Stress Index formula area-matched for all 102 Illinois counties, rather than from statewide medians with principal-and-interest costs only.</p>
+</a>
+
+<a class="card" href="national_gap_with_property_taxes.html">
+  <div class="kicker">Evidence table &middot; National</div>
+  <h2>The Homebuying Income Gap, Corrected for Property Taxes <span class="arrow">&rarr;</span></h2>
+  <p>Adds each state's effective property tax on its typical single-family home to the MoneyLion gap calculation, which counts principal-and-interest mortgage costs only.</p>
+</a>
+
+<a class="card" href="state_gap_with_property_taxes.html">
+  <div class="kicker">Evidence table &middot; State comparison</div>
+  <h2>Homebuying Income Gap, With and Without Property Taxes <span class="arrow">&rarr;</span></h2>
+  <p>Takes the five largest published deficits and five largest published surpluses and shows how the ranking changes once property taxes are included.</p>
+</a>
+
+<a class="card" href="methodology_gap_analysis.html">
+  <div class="kicker">Methodology</div>
+  <h2>Methodology: The Homebuying Income Gap, Corrected for Property Taxes <span class="arrow">&rarr;</span></h2>
+  <p>How the evidence tables were built: the source study, the proof that it excludes property taxes, the corrections applied, every data input with vintage, every formula, and the direction of every known bias.</p>
+</a>
+
+<footer>Compiled August 2026</footer>
 </div>
-<div class="sortline"><span class="hint">Sorted by:</span> <span id="sortlabel"></span></div>
-<div class="tablebox">
-<table id="tbl">
-<thead><tr>
-  <th data-k="town">Town <span class="arr"></span></th>
-  <th data-k="pop" title="Total population, ACS 2023 5-year (B01003)">Population <span class="arr"></span></th>
-  <th data-k="ahpaa" title="IHDA AHPAA 2023 affordable housing share">Afford. % <span class="arr"></span></th>
-  <th data-k="zhvi" title="Zillow ZHVI single-family typical value (35th-65th pct band), June 2026; not a sales median">Home value <span class="arr"></span></th>
-  <th data-k="eff" title="Effective property tax rate, tax year 2024, pre-exemption">Eff. tax % <span class="arr"></span></th>
-  <th data-k="per50k" title="Annual tax per $50,000 of market value">Tax / $50K <span class="arr"></span></th>
-  <th data-k="anntax" title="Estimated annual tax at the typical (ZHVI) home value, pre-exemption">Tax @ typ. value <span class="arr"></span></th>
-  <th data-k="units" title="Total housing units, ACS 2023 5-year (B25001)">Units <span class="arr"></span></th>
-  <th data-k="a25" title="ZHVI appreciation Jun 2001 to Jun 2026">25-yr % <span class="arr"></span></th>
-  <th data-k="a10" title="ZHVI appreciation Jun 2016 to Jun 2026">10-yr % <span class="arr"></span></th>
-  <th data-k="a5" title="ZHVI appreciation Jun 2021 to Jun 2026">5-yr % <span class="arr"></span></th>
-  <th data-k="pw" class="demo" title="Non-Hispanic White share of population, ACS 2023 5-yr (B03002)">White % <span class="arr"></span></th>
-  <th data-k="pb" title="Non-Hispanic Black share">Black % <span class="arr"></span></th>
-  <th data-k="pa" title="Non-Hispanic Asian share">Asian % <span class="arr"></span></th>
-  <th data-k="ph" title="Hispanic or Latino share (any race)">Hispanic % <span class="arr"></span></th>
-  <th data-k="po" title="All other non-Hispanic groups incl. two or more races">Other % <span class="arr"></span></th>
-</tr></thead>
-<tbody></tbody>
-</table>
-</div>
-<footer>
-<b>Sources.</b> Affordable share: IHDA, 2023 AHPAA Statewide Affordability Report (ACS 2017&ndash;2021 basis). Home values and appreciation: Zillow ZHVI, single-family mid-tier, seasonally adjusted, June values; ZHVI is a typical-value index, not a sales median. Effective tax rates: Cook County Clerk 2024 Tax Rate Report average composite rate &times; 10% residential assessment level &times; 3.0355 state equalizer; pre-exemption. Housing units, population, and demographics: U.S. Census Bureau, ACS 2023 5-year, tables B25001, B01003, B03002; race shares are non-Hispanic, Hispanic is any race, Other combines remaining groups including two or more races. DuPage-assessed towns (Addison, Wayne, Elmhurst, Hinsdale) shown without Cook-method tax figures. Golf (205 units) is too small for its value index to be statistically stable. Green marks the best value in a column, red the worst; tax extremes exclude Chicago, whose rate reflects a city-scale base.
-</footer>
-</div>
-<script>
-const DATA=[{"town":"Golf","ahpaa":0.6,"zhvi":1331404,"eff":2.58,"per50k":1289,"anntax":34311,"units":205,"a25":126.2,"a20":44.0,"a10":63.9,"a5":44.3,"pop":548,"pw":79.2,"pb":3.8,"pa":7.1,"ph":5.8,"po":4.0},{"town":"Addison","ahpaa":42.1,"zhvi":405810,"eff":null,"per50k":null,"anntax":null,"units":13449,"a25":93.0,"a20":25.6,"a10":63.8,"a5":26.6,"pop":35470,"pw":42.9,"pb":3.1,"pa":8.9,"ph":43.8,"po":1.3},{"town":"Wayne","ahpaa":5.4,"zhvi":790862,"eff":null,"per50k":null,"anntax":null,"units":904,"a25":89.0,"a20":34.0,"a10":62.8,"a5":39.4,"pop":2284,"pw":75.6,"pb":2.5,"pa":11.6,"ph":5.3,"po":5.1},{"town":"Western Springs","ahpaa":2.1,"zhvi":936794,"eff":2.28,"per50k":1141,"anntax":21385,"units":4568,"a25":93.0,"a20":29.0,"a10":52.8,"a5":36.6,"pop":13353,"pw":88.4,"pb":0.3,"pa":2.4,"ph":5.8,"po":3.0},{"town":"Northfield","ahpaa":6.3,"zhvi":1077793,"eff":2.28,"per50k":1138,"anntax":24541,"units":2492,"a25":90.7,"a20":30.0,"a10":52.4,"a5":40.9,"pop":5683,"pw":84.8,"pb":0.2,"pa":8.6,"ph":2.4,"po":4.0},{"town":"La Grange","ahpaa":13.2,"zhvi":780369,"eff":2.55,"per50k":1273,"anntax":19863,"units":6111,"a25":111.2,"a20":32.6,"a10":51.5,"a5":35.2,"pop":15999,"pw":77.7,"pb":4.3,"pa":1.4,"ph":11.8,"po":4.7},{"town":"Wilmette","ahpaa":4.8,"zhvi":1121866,"eff":2.35,"per50k":1177,"anntax":26403,"units":10730,"a25":83.1,"a20":23.7,"a10":51.4,"a5":42.3,"pop":27550,"pw":78.3,"pb":0.3,"pa":11.8,"ph":5.0,"po":4.6},{"town":"Evanston","ahpaa":19.7,"zhvi":722978,"eff":2.51,"per50k":1257,"anntax":18171,"units":33914,"a25":91.6,"a20":25.1,"a10":50.9,"a5":31.1,"pop":76552,"pw":58.4,"pb":14.6,"pa":9.0,"ph":12.3,"po":5.6},{"town":"Elmhurst","ahpaa":9.4,"zhvi":678906,"eff":null,"per50k":null,"anntax":null,"units":17732,"a25":106.9,"a20":30.2,"a10":50.4,"a5":31.8,"pop":45538,"pw":77.6,"pb":1.8,"pa":6.7,"ph":10.1,"po":3.8},{"town":"River Forest","ahpaa":9.7,"zhvi":954715,"eff":2.85,"per50k":1424,"anntax":27188,"units":4494,"a25":99.4,"a20":23.6,"a10":49.9,"a5":34.8,"pop":11489,"pw":78.3,"pb":4.6,"pa":6.7,"ph":6.4,"po":4.1},{"town":"Northbrook","ahpaa":5.0,"zhvi":857225,"eff":2.43,"per50k":1213,"anntax":20799,"units":14490,"a25":89.5,"a20":25.7,"a10":49.3,"a5":42.6,"pop":34642,"pw":73.2,"pb":2.7,"pa":16.5,"ph":5.3,"po":2.2},{"town":"Riverside","ahpaa":12.2,"zhvi":614118,"eff":3.33,"per50k":1666,"anntax":20457,"units":3831,"a25":86.1,"a20":14.3,"a10":48.6,"a5":27.8,"pop":9079,"pw":65.3,"pb":0.6,"pa":1.4,"ph":29.4,"po":3.3},{"town":"Indian Head Park","ahpaa":48.0,"zhvi":512199,"eff":2.29,"per50k":1144,"anntax":11723,"units":1838,"a25":78.0,"a20":22.8,"a10":45.7,"a5":24.2,"pop":3992,"pw":84.4,"pb":1.8,"pa":0.6,"ph":13.0,"po":0.2},{"town":"Park Ridge","ahpaa":8.1,"zhvi":659179,"eff":2.89,"per50k":1446,"anntax":19066,"units":16013,"a25":70.0,"a20":9.7,"a10":45.7,"a5":29.2,"pop":39241,"pw":82.8,"pb":1.0,"pa":7.1,"ph":6.0,"po":3.1},{"town":"Glenview","ahpaa":8.8,"zhvi":817739,"eff":2.32,"per50k":1160,"anntax":18965,"units":19405,"a25":78.3,"a20":16.8,"a10":44.4,"a5":34.9,"pop":47682,"pw":68.8,"pb":1.2,"pa":16.5,"ph":8.9,"po":4.7},{"town":"Inverness","ahpaa":1.4,"zhvi":857080,"eff":2.8,"per50k":1401,"anntax":24014,"units":2938,"a25":55.5,"a20":10.3,"a10":40.3,"a5":35.3,"pop":7541,"pw":74.2,"pb":1.4,"pa":21.3,"ph":1.0,"po":2.1},{"town":"Oak Park","ahpaa":23.4,"zhvi":626261,"eff":3.4,"per50k":1701,"anntax":21308,"units":24673,"a25":89.6,"a20":18.5,"a10":38.9,"a5":27.3,"pop":53315,"pw":61.1,"pb":19.3,"pa":5.3,"ph":8.5,"po":5.7},{"town":"Hinsdale","ahpaa":3.7,"zhvi":1387426,"eff":null,"per50k":null,"anntax":null,"units":6156,"a25":65.4,"a20":14.3,"a10":38.5,"a5":38.1,"pop":17155,"pw":72.5,"pb":1.4,"pa":15.2,"ph":5.7,"po":5.1},{"town":"Maywood","ahpaa":75.6,"zhvi":266183,"eff":4.68,"per50k":2341,"anntax":12463,"units":8385,"a25":236.4,"a20":null,"a10":133.7,"a5":20.8,"pop":23173,"pw":5.7,"pb":57.5,"pa":0.6,"ph":33.4,"po":2.8},{"town":"Bellwood","ahpaa":80.9,"zhvi":261787,"eff":4.71,"per50k":2355,"anntax":12331,"units":6475,"a25":179.3,"a20":null,"a10":112.9,"a5":26.0,"pop":18373,"pw":3.5,"pb":69.9,"pa":1.2,"ph":23.3,"po":2.1},{"town":"Cicero","ahpaa":72.6,"zhvi":283045,"eff":5.71,"per50k":2853,"anntax":16152,"units":26738,"a25":148.8,"a20":null,"a10":108.6,"a5":23.2,"pop":83223,"pw":7.4,"pb":3.1,"pa":0.4,"ph":88.8,"po":0.3},{"town":"Berwyn","ahpaa":54.5,"zhvi":332332,"eff":3.54,"per50k":1769,"anntax":11760,"units":21987,"a25":126.0,"a20":null,"a10":74.5,"a5":21.9,"pop":55888,"pw":26.3,"pb":8.2,"pa":4.1,"ph":60.2,"po":1.2},{"town":"Westchester","ahpaa":48.7,"zhvi":375740,"eff":2.74,"per50k":1372,"anntax":10313,"units":7376,"a25":91.3,"a20":null,"a10":68.6,"a5":30.6,"pop":16524,"pw":53.7,"pb":19.9,"pa":3.4,"ph":21.3,"po":1.7},{"town":"Chicago","ahpaa":47.2,"zhvi":332218,"eff":2.01,"per50k":1005,"anntax":6675,"units":1268199,"a25":124.8,"a20":null,"a10":66.9,"a5":17.9,"pop":2707648,"pw":32.2,"pb":28.0,"pa":7.0,"ph":29.6,"po":3.2},{"town":"Forest Park","ahpaa":43.9,"zhvi":396046,"eff":3.16,"per50k":1580,"anntax":12514,"units":7777,"a25":200.6,"a20":null,"a10":63.7,"a5":24.5,"pop":14000,"pw":53.0,"pb":24.8,"pa":7.2,"ph":11.1,"po":3.9},{"town":"Brookfield","ahpaa":34.9,"zhvi":369731,"eff":3.42,"per50k":1708,"anntax":12627,"units":8010,"a25":104.2,"a20":null,"a10":62.5,"a5":30.4,"pop":19235,"pw":69.9,"pb":5.1,"pa":1.0,"ph":20.4,"po":3.6}];
-const fmt={
-  pop:v=>v==null?'&ndash;':v.toLocaleString(),
-  ahpaa:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  zhvi:v=>v==null?'&ndash;':'$'+v.toLocaleString(),
-  eff:v=>v==null?'&ndash;':v.toFixed(2)+'%',
-  per50k:v=>v==null?'&ndash;':'$'+v.toLocaleString(),
-  anntax:v=>v==null?'&ndash;':'$'+v.toLocaleString(),
-  units:v=>v==null?'&ndash;':v.toLocaleString(),
-  a25:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  a10:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  a5:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  pw:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  pb:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  pa:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  ph:v=>v==null?'&ndash;':v.toFixed(1)+'%',
-  po:v=>v==null?'&ndash;':v.toFixed(1)+'%'
-};
-const labels={town:'Town',pop:'Population',ahpaa:'Affordable share',zhvi:'Home value',eff:'Effective tax rate',per50k:'Tax per $50K',anntax:'Tax at typical value',units:'Housing units',a25:'25-year appreciation',a10:'10-year appreciation',a5:'5-year appreciation',pw:'White share',pb:'Black share',pa:'Asian share',ph:'Hispanic share',po:'Other share'};
-const demoCols=new Set(['pw']);
-const taxCols=new Set(['eff','per50k']);
-let sortKey='a10',sortDir=-1,fpop=null,funits=null;
-function extremes(rows){
-  const ex={};
-  for(const k of taxCols){
-    const vals=rows.filter(d=>d[k]!=null&&d.town!=='Chicago').map(d=>d[k]);
-    if(vals.length)ex[k]={min:Math.min(...vals),max:Math.max(...vals)};
-  }
-  return ex;
-}
-function visible(){
-  return DATA.filter(d=>(fpop==null||d.pop>=fpop)&&(funits==null||d.units>=funits));
-}
-function render(){
-  const rows=visible().sort((a,b)=>{
-    const x=a[sortKey],y=b[sortKey];
-    if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;
-    if(typeof x==='string')return sortDir*x.localeCompare(y);
-    return sortDir*(x-y);
-  });
-  const EX=extremes(rows);
-  const cols=['pop','ahpaa','zhvi','eff','per50k','anntax','units','a25','a10','a5','pw','pb','pa','ph','po'];
-  document.querySelector('tbody').innerHTML=rows.map((d,i)=>{
-    const cells=cols.map(k=>{
-      let cls=demoCols.has(k)?'demo ':'';
-      if(taxCols.has(k)&&EX[k]&&d[k]!=null&&d.town!=='Chicago'){
-        if(d[k]===EX[k].min)cls+='best';else if(d[k]===EX[k].max)cls+='worst';
-      }
-      if(d[k]==null)cls+='na';
-      return `<td class="${cls.trim()}">${fmt[k](d[k])}</td>`;
-    }).join('');
-    return `<tr class="${d.town==='Oak Park'?'op':''}"><td><span class="rank">${String(i+1).padStart(2,'0')}</span> ${d.town}</td>${cells}</tr>`;
-  }).join('');
-  document.querySelectorAll('thead th').forEach(th=>{
-    const on=th.dataset.k===sortKey;
-    th.classList.toggle('active',on);
-    th.querySelector('.arr').textContent=on?(sortDir<0?'\u25BE':'\u25B4'):'';
-  });
-  document.getElementById('sortlabel').textContent=labels[sortKey]+' ('+(sortDir<0?'high to low':'low to high')+')';
-  const n=rows.length;
-  document.getElementById('count').textContent=n===DATA.length?`${n} of ${DATA.length} towns`:`${n} of ${DATA.length} towns shown`;
-}
-document.querySelectorAll('thead th').forEach(th=>{
-  th.addEventListener('click',()=>{
-    const k=th.dataset.k;
-    if(k===sortKey){sortDir*=-1;}else{sortKey=k;sortDir=(k==='town')?1:-1;}
-    render();
-  });
-});
-document.getElementById('fpop').addEventListener('input',e=>{fpop=e.target.value===''?null:+e.target.value;render();});
-document.getElementById('funits').addEventListener('input',e=>{funits=e.target.value===''?null:+e.target.value;render();});
-document.getElementById('fclear').addEventListener('click',()=>{
-  fpop=funits=null;
-  document.getElementById('fpop').value='';document.getElementById('funits').value='';render();
-});
-render();
-</script>
 </body>
 </html>

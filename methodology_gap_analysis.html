@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodology: The Homebuying Income Gap, Corrected for Property Taxes</title>
+<style>
+  :root{--ink:#1a2332;--muted:#6b7686;--line:#dfe3ea;--bg:#fbfbf9;--hl:#fff7dc;--hl-border:#e8c84a;}
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 70px;background:var(--bg);color:var(--ink);
+    font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:840px;margin:0 auto;}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;}
+  h1{font-size:27px;margin:0 0 8px;font-weight:700;line-height:1.25;}
+  .lede{color:#3a4454;margin:0 0 26px;font-size:16px;}
+  h2{font-size:19px;margin:30px 0 8px;font-weight:700;}
+  p{margin:0 0 12px;color:#2a3342;}
+  .formula{background:#fff;border:1px solid var(--line);border-left:3px solid var(--hl-border);
+    border-radius:4px;padding:10px 14px;margin:10px 0 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13.5px;overflow-x:auto;white-space:nowrap;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0 16px;background:#fff;}
+  th,td{padding:7px 10px;text-align:left;border:1px solid var(--line);vertical-align:top;}
+  thead th{background:#f3f4f6;font-weight:600;}
+  td.num{white-space:nowrap;}
+  .note{background:var(--hl);border:1px solid var(--hl-border);border-radius:4px;padding:10px 14px;margin:12px 0 16px;font-size:14px;}
+  .foot{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Methodology &middot; compiled August 2026</p>
+  <h1>The Homebuying Income Gap, Corrected for Property Taxes</h1>
+  <p class="lede">How the companion evidence table was built: the source study, the proof that it excludes property taxes, the corrections applied, every data input with vintage, every formula, every assumption, and the direction of every known bias.</p>
+
+  <h2>1. What is being corrected</h2>
+  <p>MoneyLion&rsquo;s 2026 Mortgage Stress Index (published July 21, 2026, data as of June 23, 2026) compares each state&rsquo;s median household income against the income needed to comfortably buy a typical home. It was popularized by Visual Capitalist (&ldquo;Mapped: The Homebuying Income Gap in Every U.S. State,&rdquo; August 17, 2026) and reported by Crain&rsquo;s Chicago Business, which framed Illinois&rsquo;s $20,002 surplus, the largest in the nation, as the state&rsquo;s affordability advantage.</p>
+  <p>The published figures have two structural problems. First, the mortgage cost used in the calculation is principal and interest only: it excludes property taxes and insurance. Second, the statewide comparison matches a statewide median income against a statewide typical home value, a pairing no actual household occupies; income and home values are spatially correlated within a state, so the blended statistic can report a surplus that does not exist in the submarkets where most residents live.</p>
+
+  <h2>2. Proof that the published gaps exclude property taxes</h2>
+  <p>MoneyLion&rsquo;s methodology note names a 10% down payment and the 6.47% national average 30-year fixed rate (as of May 23, 2026) but does not state whether taxes and insurance are included. The study&rsquo;s own worked examples settle it. A 30-year amortizing payment at 6.47% on 90% of each cited home value reproduces the published payments exactly (a third worked example, Hawaii, is omitted because MoneyLion&rsquo;s cited home value for it could not be re-verified against the archived study text):</p>
+  <table>
+    <thead><tr><th>State</th><th class="num">Cited home value</th><th class="num">Computed P&amp;I (90% LTV, 6.47%, 30 yr)</th><th class="num">Published payment</th></tr></thead>
+    <tbody>
+      <tr><td>Maryland</td><td class="num">$434,033</td><td class="num">$2,461</td><td class="num">$2,461</td></tr>
+      <tr><td>Massachusetts</td><td class="num">$667,265</td><td class="num">$3,784</td><td class="num">$3,784</td></tr>
+    </tbody>
+  </table>
+  <p>Exact matches leave no room for taxes or insurance in the mortgage-payment component: MoneyLion&rsquo;s mortgage cost is principal and interest only. Whether any property tax enters their separate living-expense component cannot be verified from the published study; two facts make it unlikely, namely that their methodology note describes living expenses as household essentials sourced from cost-of-living and consumer-expenditure data without mention of housing taxes, and that the living-expense value implied by their Illinois figures ($11,043 per year, &sect;5) is too small to plausibly contain both baseline essentials and roughly $5,800 of Illinois property taxes. On that basis this analysis treats property taxes as absent from the published gaps; if MoneyLion&rsquo;s living expenses did partially include them, the correction here would overstate the adjustment by that partial amount.</p>
+
+  <h2>3. The corrections applied</h2>
+  <p><b>Correction 1: add property taxes.</b> Each area&rsquo;s effective property tax rate is applied to its typical single-family home value and added to essential costs. Under MoneyLion&rsquo;s own 50/30/20 budgeting rule, essential expenses are capped at 50% of income, so each dollar of added essential cost raises the income needed by two dollars:</p>
+  <div class="formula">Gap + tax &nbsp;=&nbsp; Gap (P&amp;I) &nbsp;&minus;&nbsp; 2 &times; (effective tax rate &times; single-family home value)</div>
+  <p><b>Correction 2: area-match the comparison.</b> Three Illinois geographies (Cook County, Peoria County, and the Village of Oak Park) are computed with the identical formula from their own local incomes and home values, and placed on the same scale as the 50 states. This shows the within-state spread the statewide figure compresses: on the corrected measure, Peoria County would rank 2nd in the nation while Oak Park would rank 32nd.</p>
+  <p><b>Correction 3: one measurement per column, every row.</b> All 53 rows use the same tax construct, the same income vintage, the same home value index, and the same formula. Where a genuinely different construct is informative (the statutory new-buyer tax rate in Oak Park), it is disclosed in the notes rather than mixed into a row.</p>
+
+  <h2>4. Data inputs</h2>
+  <table>
+    <thead><tr><th>Input</th><th>Source</th><th>Vintage</th><th>Applies to</th></tr></thead>
+    <tbody>
+      <tr><td>State median household incomes and Gap (P&amp;I)</td><td>MoneyLion, 2026 Mortgage Stress Index; reproduced verbatim, unmodified</td><td class="num">2026 (as of June 23, 2026)</td><td>50 state rows</td></tr>
+      <tr><td>Local median household incomes</td><td>U.S. Census Bureau, American Community Survey (ACS) 5-year, table B19013, scaled to 2026 (see &sect;5)</td><td class="num">2023, scaled</td><td>Cook, Peoria, Oak Park</td></tr>
+      <tr><td>Typical single-family home values</td><td>Zillow Home Value Index (ZHVI), single-family, mid-tier (35th&ndash;65th percentile), smoothed, seasonally adjusted; a typical-value index, not a sales median</td><td class="num">June 2026 (states); July 2026 (local)</td><td>All rows</td></tr>
+      <tr><td>Effective property tax rates</td><td>ACS 5-year: aggregate real estate taxes paid (B25090) &divide; aggregate value of owner-occupied homes (B25082)</td><td class="num">2023</td><td>All rows, identically</td></tr>
+      <tr><td>Mortgage terms</td><td>MoneyLion&rsquo;s stated assumptions: 10% down payment, 6.47% 30-year fixed (national average, May 23, 2026)</td><td class="num">May 2026</td><td>All rows</td></tr>
+      <tr><td>Oak Park statutory new-buyer rate (disclosure only)</td><td>Cook County Clerk, 2024 Tax Rate Report (released December 2025): 11.205% composite for a pure District 97 + Oak Park and River Forest High School (OPRF) parcel &times; 10% residential assessment level &times; 3.0355 state equalizer = 3.40% pre-exemption</td><td class="num">Tax year 2024, payable 2025</td><td>Notes only</td></tr>
+    </tbody>
+  </table>
+  <p>The aggregate-over-aggregate tax construct was chosen because the ACS median tax variable (B25103) top-codes at $10,000+, which caps the numerator in high-tax places (Oak Park&rsquo;s median hits the cap), while aggregates are uncapped and computable identically for states, counties, and places. The resulting rate is an all-owner-occupied effective-rate proxy: the ACS universe includes condominiums, townhomes, and attached homes as well as detached houses, and the rate is applied to a single-family-only Zillow value. The same proxy is applied identically to every row, so cross-row comparisons are unaffected; it is not a single-family-specific effective tax rate.</p>
+
+  <h2>5. Replicating MoneyLion&rsquo;s formula for local rows</h2>
+  <p>MoneyLion did not publish sub-state figures. The three local rows apply their formula to local inputs. Their income-needed structure, under the 50% essentials cap, is:</p>
+  <div class="formula">Income needed &nbsp;=&nbsp; 2 &times; (annual essential living expenses &nbsp;+&nbsp; annual mortgage cost)</div>
+  <p>Two state-level constants are carried into the local rows, each derived from MoneyLion&rsquo;s own published Illinois figures rather than assumed independently:</p>
+  <p><b>Living-expense constant.</b> Solving their published Illinois income-needed ($63,388) for the non-mortgage component, using the June 2026 Illinois single-family ZHVI ($303,466), the same value displayed in the companion table, yields $11,043 per year. MoneyLion&rsquo;s exact Illinois home-value input is unpublished; deriving the constant from the displayed value keeps the local rows internally consistent with the table, and the constant absorbs any difference between MoneyLion&rsquo;s input and the ZHVI used here. This statewide constant is applied to all three local rows, which understates essential costs in Cook County and Oak Park relative to downstate and therefore makes their local gaps conservative.</p>
+  <div class="formula">$63,388 &divide; 2 &nbsp;&minus;&nbsp; annual P&amp;I on $303,466 (90% LTV, 6.47%, 30 yr) &nbsp;=&nbsp; $11,043 / yr</div>
+  <p><b>Income vintage factor.</b> MoneyLion&rsquo;s Illinois income ($83,390, 2026) divided by the ACS 2023 Illinois income ($81,702) is 1.0207. Local ACS 2023 incomes are multiplied by this factor so they sit at the same effective vintage as the state rows. The 50 state rows are never modified; the adjustment moves only the local rows onto MoneyLion&rsquo;s scale, and it assumes local incomes grew at the statewide rate from 2023 to 2026.</p>
+
+  <h2>6. Known biases and their direction</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Direction</th></tr></thead>
+    <tbody>
+      <tr><td>Effective tax rates are incumbent rates: they reflect current owners after exemptions, senior freezes, assessment lag, and accumulated appeals. Where these mechanisms are significant, a new buyer faces more; that wedge is quantified in this analysis only for Oak Park, where the incumbent aggregate rate is 2.44% while the statutory new-buyer rate is 3.40% pre-exemption, which would move the Oak Park gap from &minus;$26,841 to &minus;$38,750 pre-exemption (&minus;$36,509 with the homeowner exemption).</td><td>Conservative for Oak Park, where the wedge is measured; the mechanisms exist in most states but the size of the wedge has not been verified state by state</td></tr>
+      <tr><td>Aggregate home values in the tax-rate denominator are owner self-reports, which skew high, deflating computed rates.</td><td>Conservative, applies to every row equally</td></tr>
+      <tr><td>The statewide living-expense constant ($11,043/yr) understates essential costs in high-cost local areas.</td><td>Conservative for Cook and Oak Park</td></tr>
+      <tr><td>Homeowner&rsquo;s insurance remains excluded, matching the source study&rsquo;s scope.</td><td>Conservative everywhere</td></tr>
+      <tr><td>ZHVI vintages differ by one month between state and local rows.</td><td>Immaterial</td></tr>
+    </tbody>
+  </table>
+  <p>The identified omitted costs (insurance and the statewide living-cost constant) make the reported gaps conservative; the incumbent-versus-new-buyer tax wedge does the same where it has been measured (Oak Park), and the mechanisms behind it exist in most states, but its size elsewhere has not been verified. Other measurement uncertainties, including applying a 2023-vintage tax rate to a 2026 home value, extrapolating local incomes by the statewide growth factor, owner-reported values in the rate denominator, the owner-occupied-versus-single-family universe difference, and ordinary ACS sampling error, are small but do not have a reliably known direction. No adjustment was chosen to make any area look less affordable; where a choice existed, the conservative option was taken.</p>
+
+  <h2>7. Headline results</h2>
+  <table>
+    <thead><tr><th>Finding</th><th class="num">Published (P&amp;I only)</th><th class="num">Corrected (+ property tax)</th></tr></thead>
+    <tbody>
+      <tr><td>States where the median income clears the threshold</td><td class="num">13</td><td class="num">6</td></tr>
+      <tr><td>Illinois gap and national rank</td><td class="num">+$20,002, #1</td><td class="num">+$8,383, #2 (behind West Virginia)</td></tr>
+      <tr><td>Cook County (same formula, local inputs)</td><td class="num">+$11,225</td><td class="num">&minus;$1,682</td></tr>
+      <tr><td>Peoria County</td><td class="num">+$21,414</td><td class="num">+$14,129 (would rank 2nd)</td></tr>
+      <tr><td>Oak Park</td><td class="num">+$3,547</td><td class="num">&minus;$26,841 (would rank 32nd)</td></tr>
+    </tbody>
+  </table>
+  <div class="note">The single number that summarizes the analysis: Oak Park&rsquo;s median household clears MoneyLion&rsquo;s published affordability test by $3,547 before property taxes, and misses it by $26,841 after, using the incumbent tax rate, and by roughly $38,750 at the pre-exemption rate a new buyer actually faces.</div>
+
+  <h2>8. Reproducibility</h2>
+  <p>Every input is public: MoneyLion&rsquo;s published state table, Zillow&rsquo;s downloadable ZHVI files (state, county, and city single-family series), ACS 5-year tables B19013, B25090, B25082, and B25103 via the Census Bureau Application Programming Interface (API), and the Cook County Clerk&rsquo;s 2024 Tax Rate Report. The full 102-county Illinois companion table and the 53-row national table were generated from these sources with the formulas above and no other adjustments.</p>
+
+  <p class="foot">Companion evidence tables: &ldquo;The Homebuying Income Gap, Corrected for Property Taxes&rdquo; (53 rows, national) and &ldquo;Illinois Area-Matched Affordability Gap&rdquo; (102 counties). Source study: MoneyLion, &ldquo;The Mortgage Stress Index,&rdquo; July 21, 2026. Popularizations: Visual Capitalist, August 17, 2026; Crain&rsquo;s Chicago Business, August 2026.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illinois Area-Matched Affordability Gap</title>
+<style>
+  :root{
+    --ink:#1a2332; --muted:#6b7686; --line:#dfe3ea; --bg:#fbfbf9;
+    --hl:#fff7dc; --hl-border:#e8c84a;
+    --good-bg:#e3f2e6; --good-ink:#1e6b34;
+    --bad-bg:#fbe4e2; --bad-ink:#a1352c;
+    --state-bg:#eef1f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 60px;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;}
+  h1{font-size:28px;margin:0 0 10px;font-weight:700;}
+  .desc{max-width:74ch;color:#3a4454;margin:0 0 18px;}
+  .filters{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:0 0 14px;font-size:14px;}
+  .filters label{color:var(--muted);}
+  .filters input{width:110px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;font-size:14px;background:#fff;}
+  .filters button{padding:5px 12px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;}
+  .filters button:hover{background:#f1f2f4;}
+  .sortnote{font-size:13px;color:var(--muted);margin:0 0 8px;}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:#fff;}
+  table{border-collapse:collapse;width:100%;min-width:960px;font-size:13.5px;}
+  th,td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);}
+  th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit;}
+  thead th{background:#f3f4f6;font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;}
+  thead th:hover{background:#e9ebee;}
+  thead th .arr{color:var(--muted);font-size:11px;margin-left:3px;}
+  tbody tr{background:#fff;}
+  tbody tr:nth-child(even){background:#f8f9fa;}
+  tbody tr.op{background:var(--hl);outline:2px solid var(--hl-border);outline-offset:-2px;font-weight:600;}
+  tbody tr.state{background:var(--state-bg);font-weight:600;}
+  td.best{background:var(--good-bg);color:var(--good-ink);font-weight:600;}
+  td.worst{background:var(--bad-bg);color:var(--bad-ink);font-weight:600;}
+  td.neg{color:var(--bad-ink);}
+  td.pos{color:var(--good-ink);}
+  tr.op td.neg, tr.state td.neg{color:var(--bad-ink);}
+  .sources{margin-top:22px;font-size:12.5px;color:#4a5464;max-width:100ch;line-height:1.55;}
+  .sources b{color:var(--ink);}
+  @media (max-width:640px){ h1{font-size:22px} body{padding:18px 10px 40px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Evidence table &middot; compiled August 2026</p>
+  <h1>Illinois Area-Matched Affordability Gap</h1>
+  <p class="desc">MoneyLion&rsquo;s 2026 Mortgage Stress Index reports a statewide income surplus of +$20,002 for Illinois homebuyers, computed from statewide medians with principal-and-interest mortgage costs only. This table re-runs their formula area-matched for all 102 Illinois counties on the validated specification (aggregate-based effective property tax rates, 2026-scaled incomes, a June-vintage statewide anchor), then adds each county&rsquo;s property tax. Click any column header to sort. Oak Park is highlighted; the statewide row is shaded gray.</p>
+  <div class="filters">
+    <label>Population &ge; <input type="number" id="fPop" placeholder="0" min="0" step="10000"></label>
+    <label>Gap + tax &le; <input type="number" id="fGap" placeholder="any" step="1000"></label>
+    <button id="clearBtn">Clear filters</button>
+  </div>
+  <p class="sortnote">Sorted by: <span id="sortLabel">Population (desc)</span></p>
+  <div class="tblwrap">
+  <table id="tbl">
+    <thead><tr>
+      <th data-k="area" data-t="s">Area<span class="arr"></span></th>
+      <th data-k="pop" data-t="n">Population<span class="arr"></span></th>
+      <th data-k="inc" data-t="n">Med. income<span class="arr"></span></th>
+      <th data-k="zhvi" data-t="n">SFR value<span class="arr"></span></th>
+      <th data-k="rate" data-t="n">Eff. tax %<span class="arr"></span></th>
+      <th data-k="n0" data-t="n">Needed (P&amp;I)<span class="arr"></span></th>
+      <th data-k="g0" data-t="n">Gap (P&amp;I)<span class="arr"></span></th>
+      <th data-k="n1" data-t="n">Needed + tax<span class="arr"></span></th>
+      <th data-k="g1" data-t="n">Gap + tax<span class="arr"></span></th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="sources"><b>Sources.</b> Median household income and population: U.S. Census Bureau, ACS 2023 5-year, tables B19013 and B01003, with incomes scaled to 2026 by the 1.0207 factor implied by MoneyLion&rsquo;s Illinois income versus the ACS statewide figure; the statewide row uses MoneyLion&rsquo;s published 2026 income ($83,390) and published income-needed ($63,388) verbatim. Home values: Zillow ZHVI, single-family mid-tier, seasonally adjusted, July 2026 (statewide row: June 2026, matching the source study&rsquo;s data-as-of date); ZHVI is a typical-value index, not a sales median. Effective property tax rates: ACS 2023 5-year aggregate real estate taxes paid (B25090) divided by aggregate value of owner-occupied homes (B25082) per county, a construct that avoids the $10,000 top-code on ACS median tax figures and is computed identically for every row; these are incumbent rates reflecting exemptions, assessment lag, and appeals, and where those mechanisms are significant a new buyer faces more, a wedge quantified in the companion methodology only for Oak Park (incumbent 2.44% versus a 3.40% statutory new-buyer rate from the Cook County Clerk&rsquo;s 2024 Tax Rate Report). Income needed replicates MoneyLion&rsquo;s method: 2 &times; (annual essential living expenses + annual mortgage cost), with a 10% down payment at the 6.47% 30-year fixed rate they used and a statewide living-expense constant of $11,043/yr backed out of their published Illinois income-needed figure against the June 2026 statewide ZHVI; the &ldquo;+ tax&rdquo; columns add effective rate &times; ZHVI to essential costs, which raises income needed by two dollars per tax dollar under their 50% essentials cap. County and village living costs are approximated by the statewide constant, which is conservative for high-cost areas. MoneyLion&rsquo;s own payment examples (Maryland $2,461, Massachusetts $3,784) reproduce exactly as pure principal and interest (a third worked example, Hawaii, is omitted because its cited home value could not be re-verified against the archived study text), confirming the mortgage-payment component excludes property taxes and insurance. Green marks the best value in a column, red the worst; extremes are computed across counties only, excluding the statewide and Oak Park rows, whose geography class differs. Gap columns: green = income exceeds the threshold, red text = shortfall.</p>
+</div>
+<script>
+const DATA = [{"area": "Cook", "cls": "county", "pop": 5185812, "inc": 83487, "zhvi": 368664, "rate": 0.0175, "n0": 72261, "g0": 11226, "n1": 85169, "g1": -1682}, {"area": "DuPage", "cls": "county", "pop": 927263, "inc": 112785, "zhvi": 484190, "rate": 0.0194, "n0": 87985, "g0": 24800, "n1": 106775, "g1": 6010}, {"area": "Lake", "cls": "county", "pop": 711885, "inc": 111167, "zhvi": 419455, "rate": 0.0232, "n0": 79174, "g0": 31993, "n1": 98659, "g1": 12508}, {"area": "Will", "cls": "county", "pop": 698450, "inc": 110026, "zhvi": 385524, "rate": 0.0218, "n0": 74556, "g0": 35470, "n1": 91401, "g1": 18625}, {"area": "Kane", "cls": "county", "pop": 516097, "inc": 102758, "zhvi": 400815, "rate": 0.0227, "n0": 76637, "g0": 26121, "n1": 94831, "g1": 7927}, {"area": "McHenry", "cls": "county", "pop": 311366, "inc": 104961, "zhvi": 384404, "rate": 0.0238, "n0": 74404, "g0": 30557, "n1": 92719, "g1": 12242}, {"area": "Winnebago", "cls": "county", "pop": 283289, "inc": 65693, "zhvi": 214626, "rate": 0.0234, "n0": 51297, "g0": 14396, "n1": 61348, "g1": 4345}, {"area": "Madison", "cls": "county", "pop": 264631, "inc": 76345, "zhvi": 201049, "rate": 0.0184, "n0": 49449, "g0": 26896, "n1": 56846, "g1": 19499}, {"area": "St. Clair", "cls": "county", "pop": 254777, "inc": 71628, "zhvi": 183210, "rate": 0.0188, "n0": 47021, "g0": 24607, "n1": 53920, "g1": 17708}, {"area": "Champaign", "cls": "county", "pop": 206098, "inc": 64394, "zhvi": 249642, "rate": 0.0209, "n0": 56062, "g0": 8332, "n1": 66478, "g1": -2084}, {"area": "Sangamon", "cls": "county", "pop": 195217, "inc": 75645, "zhvi": 203512, "rate": 0.0192, "n0": 49784, "g0": 25861, "n1": 57593, "g1": 18052}, {"area": "Peoria", "cls": "county", "pop": 179831, "inc": 66280, "zhvi": 167372, "rate": 0.0218, "n0": 44866, "g0": 21414, "n1": 52151, "g1": 14129}, {"area": "McLean", "cls": "county", "pop": 170882, "inc": 79947, "zhvi": 266718, "rate": 0.0218, "n0": 58387, "g0": 21560, "n1": 70020, "g1": 9927}, {"area": "Rock Island", "cls": "county", "pop": 142995, "inc": 68147, "zhvi": 161088, "rate": 0.0215, "n0": 44010, "g0": 24137, "n1": 50949, "g1": 17198}, {"area": "Kendall", "cls": "county", "pop": 135053, "inc": 112756, "zhvi": 410337, "rate": 0.0238, "n0": 77933, "g0": 34823, "n1": 97489, "g1": 15267}, {"area": "Tazewell", "cls": "county", "pop": 130555, "inc": 78289, "zhvi": 192341, "rate": 0.0201, "n0": 48264, "g0": 30025, "n1": 55989, "g1": 22300}, {"area": "LaSalle", "cls": "county", "pop": 109049, "inc": 73774, "zhvi": 198759, "rate": 0.0195, "n0": 49137, "g0": 24637, "n1": 56883, "g1": 16891}, {"area": "Kankakee", "cls": "county", "pop": 106833, "inc": 69737, "zhvi": 229099, "rate": 0.0207, "n0": 53267, "g0": 16470, "n1": 62739, "g1": 6998}, {"area": "Macon", "cls": "county", "pop": 102591, "inc": 63739, "zhvi": 127201, "rate": 0.02, "n0": 39398, "g0": 24341, "n1": 44485, "g1": 19254}, {"area": "DeKalb", "cls": "county", "pop": 100512, "inc": 70448, "zhvi": 309655, "rate": 0.0237, "n0": 64230, "g0": 6218, "n1": 78882, "g1": -8434}, {"area": "Vermilion", "cls": "county", "pop": 73179, "inc": 55664, "zhvi": 104833, "rate": 0.0161, "n0": 36354, "g0": 19310, "n1": 39726, "g1": 15938}, {"area": "Williamson", "cls": "county", "pop": 66902, "inc": 66875, "zhvi": 159145, "rate": 0.0153, "n0": 43746, "g0": 23129, "n1": 48629, "g1": 18246}, {"area": "Adams", "cls": "county", "pop": 65166, "inc": 66304, "zhvi": 188575, "rate": 0.0152, "n0": 47751, "g0": 18553, "n1": 53493, "g1": 12811}, {"area": "Whiteside", "cls": "county", "pop": 55192, "inc": 65869, "zhvi": 149601, "rate": 0.018, "n0": 42447, "g0": 23422, "n1": 47841, "g1": 18028}, {"area": "Boone", "cls": "county", "pop": 53316, "inc": 83325, "zhvi": 292122, "rate": 0.0206, "n0": 61844, "g0": 21481, "n1": 73858, "g1": 9467}, {"area": "Grundy", "cls": "county", "pop": 52920, "inc": 94983, "zhvi": 331226, "rate": 0.0185, "n0": 67166, "g0": 27817, "n1": 79436, "g1": 15547}, {"area": "Jackson", "cls": "county", "pop": 52706, "inc": 46514, "zhvi": 134976, "rate": 0.0181, "n0": 40456, "g0": 6058, "n1": 45332, "g1": 1182}, {"area": "Ogle", "cls": "county", "pop": 51536, "inc": 80881, "zhvi": 233070, "rate": 0.0181, "n0": 53807, "g0": 27074, "n1": 62242, "g1": 18639}, {"area": "Knox", "cls": "county", "pop": 49294, "inc": 54392, "zhvi": 119711, "rate": 0.0183, "n0": 38379, "g0": 16013, "n1": 42751, "g1": 11641}, {"area": "Henry", "cls": "county", "pop": 48948, "inc": 71356, "zhvi": 176057, "rate": 0.0187, "n0": 46047, "g0": 25309, "n1": 52632, "g1": 18724}, {"area": "Coles", "cls": "county", "pop": 46689, "inc": 57198, "zhvi": 147297, "rate": 0.0177, "n0": 42133, "g0": 15065, "n1": 47347, "g1": 9851}, {"area": "Macoupin", "cls": "county", "pop": 44566, "inc": 69934, "zhvi": 145400, "rate": 0.0143, "n0": 41875, "g0": 28059, "n1": 46027, "g1": 23907}, {"area": "Stephenson", "cls": "county", "pop": 44042, "inc": 63223, "zhvi": 162207, "rate": 0.0208, "n0": 44163, "g0": 19060, "n1": 50916, "g1": 12307}, {"area": "Woodford", "cls": "county", "pop": 38348, "inc": 87398, "zhvi": 241534, "rate": 0.0198, "n0": 54959, "g0": 32439, "n1": 64526, "g1": 22872}, {"area": "Franklin", "cls": "county", "pop": 37541, "inc": 54576, "zhvi": 112397, "rate": 0.0122, "n0": 37383, "g0": 17193, "n1": 40119, "g1": 14457}, {"area": "Marion", "cls": "county", "pop": 37294, "inc": 62096, "zhvi": 126402, "rate": 0.0154, "n0": 39289, "g0": 22807, "n1": 43183, "g1": 18913}, {"area": "Clinton", "cls": "county", "pop": 36899, "inc": 84015, "zhvi": 226396, "rate": 0.0173, "n0": 52899, "g0": 31116, "n1": 60721, "g1": 23294}, {"area": "Jefferson", "cls": "county", "pop": 36808, "inc": 62364, "zhvi": 148220, "rate": 0.0161, "n0": 42259, "g0": 20105, "n1": 47035, "g1": 15329}, {"area": "Livingston", "cls": "county", "pop": 35659, "inc": 72259, "zhvi": 174645, "rate": 0.0197, "n0": 45855, "g0": 26404, "n1": 52746, "g1": 19513}, {"area": "Monroe", "cls": "county", "pop": 34969, "inc": 103735, "zhvi": 331915, "rate": 0.0148, "n0": 67260, "g0": 36475, "n1": 77103, "g1": 26632}, {"area": "Effingham", "cls": "county", "pop": 34505, "inc": 76937, "zhvi": 224261, "rate": 0.0135, "n0": 52608, "g0": 24329, "n1": 58648, "g1": 18289}, {"area": "Lee", "cls": "county", "pop": 34058, "inc": 69873, "zhvi": 188916, "rate": 0.0191, "n0": 47798, "g0": 22075, "n1": 55028, "g1": 14845}, {"area": "Christian", "cls": "county", "pop": 33684, "inc": 60477, "zhvi": 136784, "rate": 0.0147, "n0": 40702, "g0": 19775, "n1": 44734, "g1": 15743}, {"area": "Fulton", "cls": "county", "pop": 33259, "inc": 59828, "zhvi": 110869, "rate": 0.0174, "n0": 37175, "g0": 22653, "n1": 41026, "g1": 18802}, {"area": "Bureau", "cls": "county", "pop": 33027, "inc": 67255, "zhvi": 153899, "rate": 0.0171, "n0": 43032, "g0": 24223, "n1": 48292, "g1": 18963}, {"area": "Morgan", "cls": "county", "pop": 32621, "inc": 66522, "zhvi": 138157, "rate": 0.0175, "n0": 40889, "g0": 25633, "n1": 45725, "g1": 20797}, {"area": "Randolph", "cls": "county", "pop": 30142, "inc": 70293, "zhvi": 157433, "rate": 0.0126, "n0": 43513, "g0": 26780, "n1": 47482, "g1": 22811}, {"area": "Montgomery", "cls": "county", "pop": 28078, "inc": 63141, "zhvi": 136108, "rate": 0.0153, "n0": 40610, "g0": 22531, "n1": 44784, "g1": 18357}, {"area": "Logan", "cls": "county", "pop": 27870, "inc": 65514, "zhvi": 144327, "rate": 0.0174, "n0": 41729, "g0": 23785, "n1": 46765, "g1": 18749}, {"area": "McDonough", "cls": "county", "pop": 27102, "inc": 51476, "zhvi": 100403, "rate": 0.0179, "n0": 35751, "g0": 15725, "n1": 39341, "g1": 12135}, {"area": "Iroquois", "cls": "county", "pop": 26746, "inc": 63729, "zhvi": 156445, "rate": 0.0162, "n0": 43378, "g0": 20351, "n1": 48437, "g1": 15292}, {"area": "Saline", "cls": "county", "pop": 23387, "inc": 56080, "zhvi": 92373, "rate": 0.0159, "n0": 34658, "g0": 21422, "n1": 37589, "g1": 18491}, {"area": "Jo Daviess", "cls": "county", "pop": 21918, "inc": 76503, "zhvi": 256002, "rate": 0.0156, "n0": 56928, "g0": 19575, "n1": 64919, "g1": 11584}, {"area": "Fayette", "cls": "county", "pop": 21380, "inc": 58293, "zhvi": 155629, "rate": 0.0127, "n0": 43267, "g0": 15026, "n1": 47228, "g1": 11065}, {"area": "Jersey", "cls": "county", "pop": 21336, "inc": 80738, "zhvi": 205989, "rate": 0.0159, "n0": 50121, "g0": 30617, "n1": 56652, "g1": 24086}, {"area": "Shelby", "cls": "county", "pop": 20867, "inc": 69871, "zhvi": 169659, "rate": 0.0136, "n0": 45177, "g0": 24694, "n1": 49789, "g1": 20082}, {"area": "Perry", "cls": "county", "pop": 20810, "inc": 60511, "zhvi": 117844, "rate": 0.0146, "n0": 38125, "g0": 22386, "n1": 41573, "g1": 18938}, {"area": "Douglas", "cls": "county", "pop": 19686, "inc": 75719, "zhvi": 161051, "rate": 0.0171, "n0": 44005, "g0": 31714, "n1": 49512, "g1": 26207}, {"area": "Crawford", "cls": "county", "pop": 18588, "inc": 69011, "zhvi": 135534, "rate": 0.0139, "n0": 40532, "g0": 28479, "n1": 44304, "g1": 24707}, {"area": "Hancock", "cls": "county", "pop": 17434, "inc": 66388, "zhvi": 117790, "rate": 0.0157, "n0": 38117, "g0": 28271, "n1": 41817, "g1": 24571}, {"area": "Union", "cls": "county", "pop": 16972, "inc": 57586, "zhvi": 155244, "rate": 0.0123, "n0": 43215, "g0": 14371, "n1": 47026, "g1": 10560}, {"area": "Piatt", "cls": "county", "pop": 16702, "inc": 89324, "zhvi": 230731, "rate": 0.0164, "n0": 53489, "g0": 35835, "n1": 61053, "g1": 28271}, {"area": "Edgar", "cls": "county", "pop": 16637, "inc": 58085, "zhvi": 113926, "rate": 0.0142, "n0": 37591, "g0": 20494, "n1": 40835, "g1": 17250}, {"area": "Bond", "cls": "county", "pop": 16627, "inc": 62876, "zhvi": 166308, "rate": 0.0176, "n0": 44721, "g0": 18155, "n1": 50581, "g1": 12295}, {"area": "Warren", "cls": "county", "pop": 16576, "inc": 65986, "zhvi": 122078, "rate": 0.0132, "n0": 38701, "g0": 27285, "n1": 41930, "g1": 24056}, {"area": "Wayne", "cls": "county", "pop": 15994, "inc": 54204, "zhvi": 136411, "rate": 0.0141, "n0": 40652, "g0": 13552, "n1": 44495, "g1": 9709}, {"area": "Richland", "cls": "county", "pop": 15675, "inc": 61652, "zhvi": 142748, "rate": 0.013, "n0": 41514, "g0": 20138, "n1": 45239, "g1": 16413}, {"area": "Carroll", "cls": "county", "pop": 15621, "inc": 62129, "zhvi": 164772, "rate": 0.0176, "n0": 44512, "g0": 17617, "n1": 50327, "g1": 11802}, {"area": "Mercer", "cls": "county", "pop": 15619, "inc": 73192, "zhvi": 176104, "rate": 0.0177, "n0": 46054, "g0": 27138, "n1": 52283, "g1": 20909}, {"area": "De Witt", "cls": "county", "pop": 15461, "inc": 66141, "zhvi": 161714, "rate": 0.0163, "n0": 44095, "g0": 22046, "n1": 49367, "g1": 16774}, {"area": "Clark", "cls": "county", "pop": 15328, "inc": 72084, "zhvi": 151389, "rate": 0.0149, "n0": 42690, "g0": 29394, "n1": 47199, "g1": 24885}, {"area": "Lawrence", "cls": "county", "pop": 15137, "inc": 54542, "zhvi": 101381, "rate": 0.0091, "n0": 35884, "g0": 18658, "n1": 37722, "g1": 16820}, {"area": "Pike", "cls": "county", "pop": 14625, "inc": 59228, "zhvi": 123750, "rate": 0.0149, "n0": 38928, "g0": 20300, "n1": 42623, "g1": 16605}, {"area": "Moultrie", "cls": "county", "pop": 14469, "inc": 73157, "zhvi": 188500, "rate": 0.0171, "n0": 47741, "g0": 25416, "n1": 54190, "g1": 18967}, {"area": "Massac", "cls": "county", "pop": 13958, "inc": 63877, "zhvi": 121137, "rate": 0.0142, "n0": 38573, "g0": 25304, "n1": 42005, "g1": 21872}, {"area": "White", "cls": "county", "pop": 13708, "inc": 54194, "zhvi": 117285, "rate": 0.0113, "n0": 38049, "g0": 16145, "n1": 40703, "g1": 13491}, {"area": "Washington", "cls": "county", "pop": 13682, "inc": 77215, "zhvi": 172644, "rate": 0.0162, "n0": 45583, "g0": 31632, "n1": 51173, "g1": 26042}, {"area": "Ford", "cls": "county", "pop": 13396, "inc": 62038, "zhvi": 161925, "rate": 0.0182, "n0": 44124, "g0": 17914, "n1": 50017, "g1": 12021}, {"area": "Johnson", "cls": "county", "pop": 13350, "inc": 66550, "zhvi": 189689, "rate": 0.0135, "n0": 47903, "g0": 18647, "n1": 53016, "g1": 13534}, {"area": "Clay", "cls": "county", "pop": 13173, "inc": 58449, "zhvi": 112002, "rate": 0.0125, "n0": 37330, "g0": 21119, "n1": 40134, "g1": 18315}, {"area": "Mason", "cls": "county", "pop": 12878, "inc": 63411, "zhvi": 104249, "rate": 0.0195, "n0": 36274, "g0": 27137, "n1": 40344, "g1": 23067}, {"area": "Cass", "cls": "county", "pop": 12826, "inc": 66248, "zhvi": 104418, "rate": 0.0155, "n0": 36297, "g0": 29951, "n1": 39537, "g1": 26711}, {"area": "Menard", "cls": "county", "pop": 12169, "inc": 83014, "zhvi": 212091, "rate": 0.0165, "n0": 50952, "g0": 32062, "n1": 57948, "g1": 25066}, {"area": "Greene", "cls": "county", "pop": 11837, "inc": 62236, "zhvi": 115892, "rate": 0.0132, "n0": 37859, "g0": 24377, "n1": 40910, "g1": 21326}, {"area": "Marshall", "cls": "county", "pop": 11715, "inc": 71260, "zhvi": 147465, "rate": 0.0167, "n0": 42156, "g0": 29104, "n1": 47083, "g1": 24177}, {"area": "Wabash", "cls": "county", "pop": 11199, "inc": 54758, "zhvi": 130725, "rate": 0.0137, "n0": 39878, "g0": 14880, "n1": 43472, "g1": 11286}, {"area": "Cumberland", "cls": "county", "pop": 10378, "inc": 71269, "zhvi": 177674, "rate": 0.0141, "n0": 46268, "g0": 25001, "n1": 51274, "g1": 19995}, {"area": "Jasper", "cls": "county", "pop": 9233, "inc": 72563, "zhvi": 175135, "rate": 0.0131, "n0": 45922, "g0": 26641, "n1": 50528, "g1": 22035}, {"area": "Hamilton", "cls": "county", "pop": 7972, "inc": 62791, "zhvi": 120938, "rate": 0.0121, "n0": 38546, "g0": 24245, "n1": 41479, "g1": 21312}, {"area": "Schuyler", "cls": "county", "pop": 6826, "inc": 67424, "zhvi": 158957, "rate": 0.0153, "n0": 43720, "g0": 23704, "n1": 48583, "g1": 18841}, {"area": "Brown", "cls": "county", "pop": 6320, "inc": 73782, "zhvi": 165072, "rate": 0.0142, "n0": 44552, "g0": 29230, "n1": 49254, "g1": 24528}, {"area": "Henderson", "cls": "county", "pop": 6284, "inc": 67007, "zhvi": 127423, "rate": 0.0157, "n0": 39428, "g0": 27579, "n1": 43424, "g1": 23583}, {"area": "Edwards", "cls": "county", "pop": 6118, "inc": 60613, "zhvi": 133476, "rate": 0.0129, "n0": 40252, "g0": 20361, "n1": 43696, "g1": 16917}, {"area": "Putnam", "cls": "county", "pop": 5600, "inc": 79128, "zhvi": 193934, "rate": 0.0147, "n0": 48481, "g0": 30647, "n1": 54171, "g1": 24957}, {"area": "Stark", "cls": "county", "pop": 5324, "inc": 63571, "zhvi": 140476, "rate": 0.016, "n0": 41205, "g0": 22366, "n1": 45702, "g1": 17869}, {"area": "Pulaski", "cls": "county", "pop": 5074, "inc": 44120, "zhvi": 88865, "rate": 0.0102, "n0": 34181, "g0": 9939, "n1": 35986, "g1": 8134}, {"area": "Alexander", "cls": "county", "pop": 5042, "inc": 44422, "zhvi": 61264, "rate": 0.0115, "n0": 30424, "g0": 13998, "n1": 31831, "g1": 12591}, {"area": "Gallatin", "cls": "county", "pop": 4857, "inc": 55755, "zhvi": 93135, "rate": 0.0097, "n0": 34762, "g0": 20993, "n1": 36560, "g1": 19195}, {"area": "Scott", "cls": "county", "pop": 4847, "inc": 74521, "zhvi": 95624, "rate": 0.0133, "n0": 35101, "g0": 39420, "n1": 37654, "g1": 36867}, {"area": "Calhoun", "cls": "county", "pop": 4406, "inc": 93998, "zhvi": 205606, "rate": 0.0115, "n0": 50069, "g0": 43929, "n1": 54807, "g1": 39191}, {"area": "Pope", "cls": "county", "pop": 3757, "inc": 63791, "zhvi": 166356, "rate": 0.0101, "n0": 44727, "g0": 19064, "n1": 48084, "g1": 15707}, {"area": "Hardin", "cls": "county", "pop": 3623, "inc": 58336, "zhvi": 106576, "rate": 0.0092, "n0": 36591, "g0": 21745, "n1": 38549, "g1": 19787}, {"area": "Illinois statewide", "cls": "state", "pop": 12692653, "inc": 83390, "zhvi": 303466, "rate": 0.0191, "n0": 63388, "g0": 20002, "n1": 75002, "g1": 8388}, {"area": "Oak Park", "cls": "op", "pop": 52233, "inc": 110258, "zhvi": 621778, "rate": 0.0244, "n0": 106711, "g0": 3547, "n1": 137099, "g1": -26841}];
+let sortKey="pop", sortDir=-1;
+const fmt$ = v => (v<0?"\u2212$":"$")+Math.abs(v).toLocaleString();
+const fmtGap = v => (v>0?"+$":v<0?"\u2212$":"$")+Math.abs(v).toLocaleString();
+const cols=["pop","inc","zhvi","rate","n0","g0","n1","g1"];
+const extremes={};
+(function(){
+  const c=DATA.filter(d=>d.cls==="county");
+  for(const k of cols){
+    const vals=c.map(d=>d[k]);
+    // "best": cheapest need / highest income+gap / lowest rate,zhvi? Define per column:
+    // pop: no marking. inc: high=best. zhvi: low=best. rate: low=best. n0,n1: low=best. g0,g1: high=best.
+  }
+  const best={}, worst={};
+  const hiBest=["inc","g0","g1"], loBest=["zhvi","rate","n0","n1"];
+  for(const k of [...hiBest,...loBest]){
+    let bi=0, wi=0;
+    c.forEach((d,i)=>{
+      const better = hiBest.includes(k) ? d[k]>c[bi][k] : d[k]<c[bi][k];
+      const worse  = hiBest.includes(k) ? d[k]<c[wi][k] : d[k]>c[wi][k];
+      if(better) bi=i; if(worse) wi=i;
+    });
+    best[k]=c[bi].area; worst[k]=c[wi].area;
+  }
+  extremes.best=best; extremes.worst=worst;
+})();
+function render(){
+  const fp=parseFloat(document.getElementById("fPop").value)||0;
+  const fgRaw=document.getElementById("fGap").value;
+  const fg=fgRaw===""?null:parseFloat(fgRaw);
+  let rows=DATA.filter(d=>d.pop>=fp && (fg===null || d.g1<=fg));
+  rows.sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if(typeof va==="string") return sortDir*va.localeCompare(vb);
+    return sortDir*(va-vb);
+  });
+  const tb=document.querySelector("#tbl tbody");
+  tb.innerHTML=rows.map(d=>{
+    const cell=(k,txt)=>{
+      let cls="";
+      if(d.cls==="county"){
+        if(extremes.best[k]===d.area) cls="best";
+        else if(extremes.worst[k]===d.area) cls="worst";
+      }
+      if((k==="g0"||k==="g1") && !cls) cls = d[k]<0?"neg":"pos";
+      return `<td class="${cls}">${txt}</td>`;
+    };
+    return `<tr class="${d.cls}">`+
+      `<td>${d.area}</td>`+
+      `<td>${d.pop.toLocaleString()}</td>`+
+      cell("inc",fmt$(d.inc))+
+      cell("zhvi",fmt$(d.zhvi))+
+      cell("rate",(d.rate*100).toFixed(2)+"%")+
+      cell("n0",fmt$(d.n0))+
+      cell("g0",fmtGap(d.g0))+
+      cell("n1",fmt$(d.n1))+
+      cell("g1",fmtGap(d.g1))+
+    `</tr>`;
+  }).join("");
+  const labels={area:"Area",pop:"Population",inc:"Med. income",zhvi:"SFR value",rate:"Eff. tax %",n0:"Needed (P&I)",g0:"Gap (P&I)",n1:"Needed + tax",g1:"Gap + tax"};
+  document.getElementById("sortLabel").textContent = labels[sortKey]+" ("+(sortDir===1?"asc":"desc")+")";
+  document.querySelectorAll("thead th").forEach(th=>{
+    th.querySelector(".arr").textContent = th.dataset.k===sortKey ? (sortDir===1?"\u25B2":"\u25BC") : "";
+  });
+}
+document.querySelectorAll("thead th").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.k;
+    if(sortKey===k) sortDir*=-1;
+    else { sortKey=k; sortDir = th.dataset.t==="s"?1:-1; }
+    render();
+  });
+});
+document.getElementById("fPop").addEventListener("input",render);
+document.getElementById("fGap").addEventListener("input",render);
+document.getElementById("clearBtn").addEventListener("click",()=>{
+  document.getElementById("fPop").value=""; document.getElementById("fGap").value=""; render();
+});
+render();
+</script>
+</body>
+</html>

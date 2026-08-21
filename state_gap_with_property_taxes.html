@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homebuying Income Gap, With and Without Property Taxes</title>
+<style>
+  :root{
+    --ink:#1a2332; --muted:#6b7686; --line:#dfe3ea; --bg:#fbfbf9;
+    --hl:#fff7dc; --hl-border:#e8c84a;
+    --good-bg:#e3f2e6; --good-ink:#1e6b34;
+    --bad-bg:#fbe4e2; --bad-ink:#a1352c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:28px 20px 60px;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;}
+  h1{font-size:28px;margin:0 0 10px;font-weight:700;}
+  .desc{max-width:76ch;color:#3a4454;margin:0 0 18px;}
+  .filters{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:0 0 14px;font-size:14px;}
+  .filters label{color:var(--muted);}
+  .filters input{width:110px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;font-size:14px;background:#fff;}
+  .filters button{padding:5px 12px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;}
+  .filters button:hover{background:#f1f2f4;}
+  .sortnote{font-size:13px;color:var(--muted);margin:0 0 8px;}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:#fff;}
+  table{border-collapse:collapse;width:100%;min-width:820px;font-size:13.5px;}
+  th,td{padding:8px 11px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{background:#f3f4f6;font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;}
+  thead th:hover{background:#e9ebee;}
+  thead th .arr{color:var(--muted);font-size:11px;margin-left:3px;}
+  tbody tr{background:#fff;}
+  tbody tr:nth-child(even){background:#f8f9fa;}
+  tbody tr.il{background:var(--hl);outline:2px solid var(--hl-border);outline-offset:-2px;font-weight:600;}
+  td.best{background:var(--good-bg);color:var(--good-ink);font-weight:600;}
+  td.worst{background:var(--bad-bg);color:var(--bad-ink);font-weight:600;}
+  td.neg{color:var(--bad-ink);}
+  td.pos{color:var(--good-ink);}
+  .sources{margin-top:22px;font-size:12.5px;color:#4a5464;max-width:100ch;line-height:1.55;}
+  .sources b{color:var(--ink);}
+  @media (max-width:640px){ h1{font-size:22px} body{padding:18px 10px 40px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Evidence table &middot; compiled August 2026</p>
+  <h1>Homebuying Income Gap, With and Without Property Taxes</h1>
+  <p class="desc">MoneyLion&rsquo;s 2026 Mortgage Stress Index computes each state&rsquo;s homebuying income gap from principal-and-interest mortgage costs only, excluding property taxes. This table takes the five largest published deficits and the five largest published surpluses and adds each state&rsquo;s effective property tax on its typical single-family home. Click any column header to sort. Illinois is highlighted. With taxes included, Illinois loses its #1 surplus ranking to West Virginia and Ohio&rsquo;s surplus flips negative.</p>
+  <div class="filters">
+    <label>Gap + tax &ge; <input type="number" id="fGap" placeholder="any" step="5000"></label>
+    <button id="clearBtn">Clear filters</button>
+  </div>
+  <p class="sortnote">Sorted by: <span id="sortLabel">Published gap (desc)</span></p>
+  <div class="tblwrap">
+  <table id="tbl">
+    <thead><tr>
+      <th data-k="state" data-t="s">State<span class="arr"></span></th>
+      <th data-k="inc" data-t="n">Med. income<span class="arr"></span></th>
+      <th data-k="zhvi" data-t="n">SFR value<span class="arr"></span></th>
+      <th data-k="rate" data-t="n">Eff. tax %<span class="arr"></span></th>
+      <th data-k="anntax" data-t="n">Annual tax<span class="arr"></span></th>
+      <th data-k="pubgap" data-t="n">Published gap<span class="arr"></span></th>
+      <th data-k="gaptax" data-t="n">Gap + tax<span class="arr"></span></th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="sources"><b>Sources.</b> Median household income and published gaps: MoneyLion, 2026 Mortgage Stress Index (July 21, 2026); their income-needed figures assume a 10% down payment, the 6.47% national average 30-year fixed rate as of May 23, 2026, and the 50/30/20 rule with essentials capped at 50% of income. MoneyLion&rsquo;s own published payment examples (Maryland $2,461, Massachusetts $3,784) reproduce exactly as pure principal and interest at those terms (a third worked example, Hawaii, is omitted because its cited home value could not be re-verified against the archived study text), confirming the mortgage-payment component excludes property taxes and insurance. Home values: Zillow ZHVI, single-family mid-tier, seasonally adjusted, June 2026, matching MoneyLion&rsquo;s data-as-of date of June 23, 2026. Effective property tax rates: U.S. Census Bureau, ACS 2023 5-year, median real estate taxes paid (B25103) divided by median owner-occupied home value (B25077), per state; these reflect current owners after exemptions and assessment lag; where those mechanisms are significant a new buyer faces more, a wedge quantified in the companion analysis only for Oak Park, and the with-tax gaps are conservative to that extent. Gap + tax = published gap &minus; 2 &times; (effective rate &times; SFR value); the doubling follows from MoneyLion&rsquo;s 50% essentials cap, under which each dollar of added essential cost raises income needed by two dollars. Green marks the best value in a column, red the worst. Table covers only the five largest published deficits and five largest published surpluses of the 50 states, per scope; it is not a full national re-ranking.</p>
+</div>
+<script>
+const DATA = [{"state": "Hawaii", "inc": 100389, "zhvi": 975382.7699170873, "rate": 0.0027010640930462755, "anntax": 2634.5713767990615, "pubgap": -116053, "gaptax": -121322.14275359812, "impliv": 41845.805276339, "cls": ""}, {"state": "California", "inc": 99122, "zhvi": 797603.3390418362, "rate": 0.0070836928386540125, "anntax": 5649.9770608571835, "pubgap": -74928, "gaptax": -86227.95412171437, "impliv": 32747.767949197674, "cls": ""}, {"state": "Montana", "inc": 72509, "zhvi": 478007.1498752621, "rate": 0.007497781721384206, "anntax": 3583.993271025701, "pubgap": -53307, "gaptax": -60474.9865420514, "impliv": 30379.418779552805, "cls": ""}, {"state": "Rhode Island", "inc": 87796, "zhvi": 525673.9645822789, "rate": 0.013161605206073753, "anntax": 6918.713188943551, "pubgap": -52057, "gaptax": -65894.42637788711, "impliv": 34154.1726261285, "cls": ""}, {"state": "New Hampshire", "inc": 99031, "zhvi": 540679.7968443224, "rate": 0.017715141612200436, "anntax": 9578.219167952933, "pubgap": -46752, "gaptax": -65908.43833590587, "impliv": 36098.01962947632, "cls": ""}, {"state": "Illinois", "inc": 83390, "zhvi": 303465.90885343513, "rate": 0.020714570858283432, "anntax": 6286.166072017863, "pubgap": 20002, "gaptax": 7429.667855964273, "impliv": 11043.021314112666, "cls": "il"}, {"state": "West Virginia", "inc": 59608, "zhvi": 177938.83409841804, "rate": 0.005366323907455013, "anntax": 954.877419487012, "pubgap": 16451, "gaptax": 14541.245161025976, "impliv": 9469.689872886847, "cls": ""}, {"state": "Maryland", "inc": 103678, "zhvi": 449569.83946902264, "rate": 0.010030173497611265, "anntax": 4509.263489167542, "pubgap": 13201, "gaptax": 4182.473021664917, "impliv": 14645.089333971962, "cls": ""}, {"state": "Ohio", "inc": 71389, "zhvi": 253758.27451738538, "rate": 0.013614457831325302, "anntax": 3454.7813277668133, "pubgap": 6578, "gaptax": -331.56265553362664, "impliv": 15137.146074429384, "cls": ""}, {"state": "Indiana", "inc": 71957, "zhvi": 261792.43025813243, "rate": 0.0074206349206349205, "anntax": 1942.6660499313796, "pubgap": 6499, "gaptax": 2613.667900137241, "impliv": 14913.918504310797, "cls": ""}];
+let sortKey="pubgap", sortDir=-1;
+const fmt$ = v => (v<0?"\u2212$":"$")+Math.abs(Math.round(v)).toLocaleString();
+const fmtGap = v => (v>0?"+$":v<0?"\u2212$":"$")+Math.abs(Math.round(v)).toLocaleString();
+const hiBest=["inc","pubgap","gaptax"], loBest=["zhvi","rate","anntax"];
+const extremes={best:{},worst:{}};
+for(const k of [...hiBest,...loBest]){
+  let bi=0, wi=0;
+  DATA.forEach((d,i)=>{
+    if(hiBest.includes(k) ? d[k]>DATA[bi][k] : d[k]<DATA[bi][k]) bi=i;
+    if(hiBest.includes(k) ? d[k]<DATA[wi][k] : d[k]>DATA[wi][k]) wi=i;
+  });
+  extremes.best[k]=DATA[bi].state; extremes.worst[k]=DATA[wi].state;
+}
+function render(){
+  const fgRaw=document.getElementById("fGap").value;
+  const fg=fgRaw===""?null:parseFloat(fgRaw);
+  let rows=DATA.filter(d=>fg===null || d.gaptax>=fg);
+  rows.sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if(typeof va==="string") return sortDir*va.localeCompare(vb);
+    return sortDir*(va-vb);
+  });
+  const tb=document.querySelector("#tbl tbody");
+  tb.innerHTML=rows.map(d=>{
+    const cell=(k,txt)=>{
+      let cls="";
+      if(extremes.best[k]===d.state) cls="best";
+      else if(extremes.worst[k]===d.state) cls="worst";
+      if((k==="pubgap"||k==="gaptax") && !cls) cls = d[k]<0?"neg":"pos";
+      return `<td class="${cls}">${txt}</td>`;
+    };
+    return `<tr class="${d.cls}">`+
+      `<td>${d.state}</td>`+
+      cell("inc",fmt$(d.inc))+
+      cell("zhvi",fmt$(d.zhvi))+
+      cell("rate",(d.rate*100).toFixed(2)+"%")+
+      cell("anntax",fmt$(d.anntax))+
+      cell("pubgap",fmtGap(d.pubgap))+
+      cell("gaptax",fmtGap(d.gaptax))+
+    `</tr>`;
+  }).join("");
+  const labels={state:"State",inc:"Med. income",zhvi:"SFR value",rate:"Eff. tax %",anntax:"Annual tax",pubgap:"Published gap",gaptax:"Gap + tax"};
+  document.getElementById("sortLabel").textContent = labels[sortKey]+" ("+(sortDir===1?"asc":"desc")+")";
+  document.querySelectorAll("thead th").forEach(th=>{
+    th.querySelector(".arr").textContent = th.dataset.k===sortKey ? (sortDir===1?"\u25B2":"\u25BC") : "";
+  });
+}
+document.querySelectorAll("thead th").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.k;
+    if(sortKey===k) sortDir*=-1;
+    else { sortKey=k; sortDir = th.dataset.t==="s"?1:-1; }
+    render();
+  });
+});
+document.getElementById("fGap").addEventListener("input",render);
+document.getElementById("clearBtn").addEventListener("click",()=>{document.getElementById("fGap").value="";render();});
+render();
+</script>
+</body>
+</html>
