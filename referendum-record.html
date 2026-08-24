@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Referendum Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16212b;--paper:#fbfaf7;--rule:#d8d4c9;--op:#fdf3cf;--op-edge:#e4c94e;--hi:#8c1d18;--lo:#1d5c3f;--amber:#8a5a00;--muted:#6b7178}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'Libre Franklin',sans-serif;font-size:14px;padding:28px 18px 60px}
+.wrap{max-width:1600px;margin:0 auto}
+header{border-bottom:3px double var(--ink);padding-bottom:14px;margin-bottom:6px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(24px,4vw,38px);line-height:1.05;margin:6px 0 4px}
+.dek{font-size:14px;color:var(--muted);max-width:95ch}
+.dek b{color:var(--ink)}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:14px 0 10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
+.filter{display:flex;flex-direction:column;gap:3px}
+.filter label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.filter select,.filter input{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 8px;border:1px solid var(--rule);background:#fff;color:var(--ink)}
+.filter input{width:170px}
+.filter select:focus,.filter input:focus{outline:2px solid var(--op-edge);outline-offset:-1px}
+.count{color:var(--muted);padding-bottom:6px}
+.clearbtn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:6px 10px;border:1px solid var(--rule);background:#fff;cursor:pointer;color:var(--ink)}
+.clearbtn:hover{background:#f2efe6}
+.sortline{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px}
+.sortline .hint{color:var(--muted)}
+.tablebox{overflow-x:auto;border:1px solid var(--rule);background:#fff}
+table{border-collapse:collapse;width:100%;min-width:1560px}
+thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 8px 8px;border-bottom:2px solid var(--ink);white-space:nowrap;background:#fff;position:sticky;top:0;z-index:2}
+thead th.sortable{cursor:pointer;user-select:none}
+thead th.sortable:hover{background:#f2efe6}
+thead th .arr{display:inline-block;width:1em;color:var(--muted)}
+thead th.active{color:#000}
+thead th.active .arr{color:var(--ink)}
+tbody td{padding:9px 8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule);font-size:12.5px;line-height:1.45}
+td.mono{font-family:'IBM Plex Mono',monospace;font-size:11.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.place{font-weight:600;font-size:13px;white-space:nowrap}
+td.cat{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+td.measure{min-width:180px;max-width:230px}
+td.summary{min-width:330px;max-width:430px}
+td.after{min-width:250px;max-width:330px;color:#3d4650}
+td.result{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;white-space:nowrap}
+.r-denied,.r-stripped{color:var(--hi)}
+.r-barrier{color:var(--amber)}
+.r-affirmed{color:var(--lo)}
+.r-refused{color:var(--ink)}
+tbody tr:hover{background:#f5f3ec}
+tbody tr.op{background:var(--op);box-shadow:inset 3px 0 0 var(--op-edge)}
+tbody tr.op:hover{background:#fbedb8}
+.rank{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding-right:2px}
+footer{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;max-width:130ch}
+footer b{color:var(--ink)}
+@media (max-width:640px){body{padding:16px 8px 40px}.filter input{width:130px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Evidence table &middot; compiled August 2026</div>
+  <h1>The Referendum Record</h1>
+  <div class="dek">Minority rights on the American ballot, 1865&ndash;2020: Black suffrage, women's suffrage, immigration and national origin, religious liberty, school integration, gay and lesbian civil rights, marriage, and housing. <b>94 entries.</b> Across 150 years, no minority right in this table was created by majority vote; the ballot's documented range runs from stripping rights to ratifying them after courts, legislatures, or constitutional amendments had already moved. Click a column header to sort. Oak Park 1968 is highlighted.</div>
+</header>
+
+<div class="controls">
+  <div class="filter"><label for="fcat">Category</label><select id="fcat"><option value="">All categories</option></select></div>
+  <div class="filter"><label for="fres">Result</label><select id="fres"><option value="">All results</option></select></div>
+  <div class="filter"><label for="fq">Search place / measure</label><input id="fq" type="text" placeholder="e.g. Akron"></div>
+  <button class="clearbtn" id="fclear">Clear filters</button>
+  <div class="count" id="count"></div>
+</div>
+
+<div class="sortline"><span class="hint">Sorted by:</span> <b id="sortlabel"></b></div>
+
+<div class="tablebox">
+<table>
+<thead>
+<tr>
+  <th class="sortable" data-k="cat">Category <span class="arr"></span></th>
+  <th class="sortable" data-k="d">Date <span class="arr"></span></th>
+  <th class="sortable" data-k="place">Place <span class="arr"></span></th>
+  <th>Measure</th>
+  <th class="sortable" data-k="type">Type <span class="arr"></span></th>
+  <th class="sortable" data-k="res">Result <span class="arr"></span></th>
+  <th>Margin</th>
+  <th>What happened</th>
+  <th>Aftermath &amp; correction</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<footer>
+<b>Reading the result column.</b> <b>Rights denied</b>: an expansion of rights was rejected by the electorate. <b>Rights stripped</b>: an existing right, ordinance, or approved project was repealed or extinguished by the electorate. <b>Barrier enacted</b>: voters created a special procedural obstacle applying to the minority-rights measure. <b>Rights affirmed</b>: the pro-rights side prevailed. <b>Referendum refused</b>: the governing body declined to submit the question to a popular vote.
+<br><br>
+<b>Sources.</b> State and municipal election returns via Ballotpedia, state election archives, and contemporaneous press; Congressional Globe, 39th Cong. (D.C. suffrage referenda); Carrie Chapman Catt's National American Woman Suffrage Association tally of 56 statewide suffrage referenda; case reporters for Reitman v. Mulkey, 387 U.S. 369 (1967), Hunter v. Erickson, 393 U.S. 385 (1969), James v. Valtierra, 402 U.S. 137 (1971), City of Eastlake v. Forest City Enterprises, 426 U.S. 668 (1976), Washington v. Seattle School District No. 1, 458 U.S. 457 (1982), Romer v. Evans, 517 U.S. 620 (1996), City of Cuyahoga Falls v. Buckeye Community Hope Foundation, 538 U.S. 188 (2003), Pierce v. Society of Sisters, 268 U.S. 510 (1925), and Obergefell v. Hodges, 576 U.S. 644 (2015); Derrick A. Bell, Jr., "The Referendum: Democracy's Barrier to Racial Equality," 54 Washington Law Review 1 (1978); Wednesday Journal and Oak Park River Forest Museum accounts of the 1968 Fair Housing Ordinance. Margins marked with a tilde (~) are approximate; several mid-1860s state returns and 1960s municipal returns (Berkeley, Tacoma, Toledo, Akron) are reported from secondary sources and rounded. Consolidated rows (Oregon and South Dakota suffrage campaigns) aggregate multiple elections listed in the notes.
+</footer>
+</div>
+
+<script>
+const DATA=[
+{cat:"Black suffrage",d:186512,dd:"Dec 1865",place:"Washington, D.C.",measure:"Black male suffrage referenda (Washington City and Georgetown)",type:"Advisory referendum",res:"Rights denied",margin:"6,591\u201335; Georgetown 712\u20131",summary:"Months after Appomattox, the capital's all-white electorates voted on extending the franchise to Black men and returned near-unanimous rejections, the most lopsided rights referenda in American history.",after:"Congress enacted D.C. Black suffrage in January 1867 over President Johnson's veto, fourteen months after the vote; the Fifteenth Amendment followed in 1870."},
+{cat:"Black suffrage",d:186510,dd:"1865",place:"Connecticut",measure:"Constitutional amendment for Black suffrage",type:"Legislative referral",res:"Rights denied",margin:"~55\u201345",summary:"The first postwar Northern test of Black suffrage at the ballot; a Union state that had just fought the war declined to extend the vote at home.",after:"Superseded by the Fifteenth Amendment (1870), adopted precisely because the state-ballot route had failed."},
+{cat:"Black suffrage",d:186511,dd:"1865",place:"Wisconsin",measure:"Black suffrage referendum",type:"Legislative referral",res:"Rights denied",margin:"~54\u201346",summary:"Wisconsin voters rejected Black suffrage in 1865, as they had in earlier referenda.",after:"The Wisconsin Supreme Court held in Gillespie v. Palmer (1866) that the 1849 referendum had in fact already enfranchised Black voters, a correction delivered by a court, not the ballot."},
+{cat:"Black suffrage",d:186509,dd:"1865",place:"Minnesota",measure:"Black suffrage amendment (first attempt)",type:"Legislative referral",res:"Rights denied",margin:"~55\u201345",summary:"Minnesota's first attempt to extend the franchise to Black men failed at the polls.",after:"Rejected again in 1867 before finally passing in 1868 on the third attempt."},
+{cat:"Black suffrage",d:186711,dd:"1867",place:"Minnesota",measure:"Black suffrage amendment (second attempt)",type:"Legislative referral",res:"Rights denied",margin:"~51\u201349",summary:"The second attempt failed narrowly, even as Republican candidates carried the state.",after:"Approved in 1868 after supporters changed the ballot wording."},
+{cat:"Black suffrage",d:186711,dd:"1867",place:"Kansas",measure:"Black suffrage proposition",type:"Legislative referral",res:"Rights denied",margin:"~2 to 1",summary:"Kansas voters rejected Black suffrage in the same election in which they rejected women's suffrage, a double defeat in a free-soil state.",after:"Fifteenth Amendment (1870)."},
+{cat:"Black suffrage",d:186710,dd:"1867",place:"Ohio",measure:"Black suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~54\u201346",summary:"Ohio rejected Black suffrage by roughly 38,000 votes while simultaneously electing Republicans statewide, demonstrating that voters would support the party of emancipation but not the franchise itself.",after:"Fifteenth Amendment (1870)."},
+{cat:"Black suffrage",d:186804,dd:"1868",place:"Michigan",measure:"New constitution including Black suffrage",type:"Legislative referral",res:"Rights denied",margin:"~61\u201339",summary:"Michigan voters rejected a proposed constitution whose inclusion of Black suffrage was a principal reason for its defeat.",after:"Fifteenth Amendment (1870); Michigan voters separately approved Black suffrage in 1870 after the federal amendment made the question moot."},
+{cat:"Black suffrage",d:186811,dd:"1868",place:"Missouri",measure:"Black suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~57\u201343",summary:"A border state that had abolished slavery in 1865 declined to enfranchise the men it had freed.",after:"Fifteenth Amendment (1870)."},
+{cat:"Black suffrage",d:186911,dd:"1869",place:"New York",measure:"Removal of the $250 property qualification applied only to Black voters",type:"Legislative referral",res:"Rights denied",margin:"~53\u201347",summary:"New York voters chose to retain a property requirement that applied exclusively to Black men, an explicitly racial franchise restriction reaffirmed at the ballot four years after the war.",after:"Nullified by the Fifteenth Amendment (1870)."},
+{cat:"Black suffrage",d:186811,dd:"1868",place:"Iowa",measure:"Black suffrage amendment",type:"Legislative referral",res:"Rights affirmed",margin:"~57\u201343",summary:"One of the first states to approve Black suffrage by popular vote, carried in the same election Grant swept the state. One of the rare exceptions in the postwar dataset.",after:"Stood; the exception that proves how exceptional it was."},
+{cat:"Black suffrage",d:186811,dd:"1868",place:"Minnesota",measure:"Black suffrage amendment (third attempt)",type:"Legislative referral",res:"Rights affirmed",margin:"~57\u201343",summary:"Passed on the third attempt after two defeats, and after supporters reworded the ballot question.",after:"Stood. Three elections were required to do what the Fifteenth Amendment did nationally two years later."},
+{cat:"Women's suffrage",d:186711,dd:"1867",place:"Kansas",measure:"Women's suffrage proposition",type:"Legislative referral",res:"Rights denied",margin:"~2 to 1",summary:"The first statewide women's suffrage referendum in American history, campaigned personally by Anthony and Stanton, defeated decisively.",after:"The first entry in a five-decade, 56-referendum record tallied by Carrie Chapman Catt; resolved by the Nineteenth Amendment (1920)."},
+{cat:"Women's suffrage",d:187411,dd:"1874",place:"Michigan",measure:"Women's suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~3 to 1",summary:"Defeated roughly three to one by an all-male electorate.",after:"Michigan's male voters finally approved suffrage in 1918, 44 years later."},
+{cat:"Women's suffrage",d:187710,dd:"1877",place:"Colorado",measure:"Women's suffrage referendum",type:"Legislative referral",res:"Rights denied",margin:"~2 to 1",summary:"Rejected two to one in the new state's first attempt.",after:"Colorado approved suffrage in 1893, becoming the first state to enact it by popular referendum, sixteen years after first refusing."},
+{cat:"Women's suffrage",d:189311,dd:"1893",place:"Colorado",measure:"Women's suffrage referendum",type:"Legislative referral",res:"Rights affirmed",margin:"~55\u201345",summary:"The first state to adopt women's suffrage by popular vote, on the second attempt, amid Populist-era political realignment.",after:"Stood; one of the handful of genuine ballot victories in the 56-referendum record."},
+{cat:"Women's suffrage",d:188211,dd:"1882",place:"Nebraska",measure:"Women's suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~2 to 1",summary:"Defeated decisively despite an organized national campaign.",after:"Nineteenth Amendment (1920)."},
+{cat:"Women's suffrage",d:191006,dd:"1884\u20131910",place:"Oregon",measure:"Women's suffrage referenda of 1884, 1900, 1906, 1908, and 1910",type:"Initiative / referral (5 elections)",res:"Rights denied",margin:"Lost 5 consecutive times",summary:"Oregon's male electorate rejected women's suffrage five times across 26 years, the most sustained losing streak of any state, with liquor interests funding the opposition in each cycle.",after:"Approved on the sixth attempt in 1912."},
+{cat:"Women's suffrage",d:191211,dd:"1912",place:"Oregon",measure:"Women's suffrage initiative (sixth attempt)",type:"Citizen initiative",res:"Rights affirmed",margin:"52\u201348",summary:"Passed narrowly on the sixth attempt, after five defeats and 28 years of campaigning.",after:"Stood. Six elections to win what a legislature could have granted in one session."},
+{cat:"Women's suffrage",d:191611,dd:"1890\u20131916",place:"South Dakota",measure:"Women's suffrage referenda of 1890, 1898, 1910, 1914, and 1916",type:"Legislative referral (5 elections)",res:"Rights denied",margin:"Lost 5 consecutive times",summary:"South Dakota's male voters rejected suffrage five times over 26 years.",after:"Approved in 1918 on the sixth attempt, as the federal amendment was already advancing through Congress."},
+{cat:"Women's suffrage",d:191811,dd:"1918",place:"South Dakota",measure:"Women's suffrage amendment (sixth attempt)",type:"Legislative referral",res:"Rights affirmed",margin:"~64\u201336",summary:"Passed after five defeats, with the wartime citizenship amendment framing and the federal amendment already in motion.",after:"Stood; a late ratification of a national outcome already being decided elsewhere."},
+{cat:"Women's suffrage",d:191511,dd:"1915",place:"Massachusetts",measure:"Women's suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~65\u201335",summary:"The heaviest of the four Eastern defeats of November 1915, in the state that had hosted the movement's intellectual leadership for 60 years.",after:"Nineteenth Amendment (1920). Massachusetts never approved suffrage by popular vote."},
+{cat:"Women's suffrage",d:191510,dd:"1915",place:"New Jersey",measure:"Women's suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~58\u201342",summary:"Defeated despite President Wilson traveling home to cast a personal vote in favor.",after:"Nineteenth Amendment (1920)."},
+{cat:"Women's suffrage",d:191511,dd:"1915",place:"New York",measure:"Women's suffrage amendment (first attempt)",type:"Legislative referral",res:"Rights denied",margin:"~57\u201343",summary:"The movement's largest campaign to date, defeated statewide.",after:"New York approved suffrage in 1917, the pivot that made the federal amendment inevitable."},
+{cat:"Women's suffrage",d:191711,dd:"1917",place:"New York",measure:"Women's suffrage amendment (second attempt)",type:"Legislative referral",res:"Rights affirmed",margin:"~54\u201346",summary:"Approved on the second attempt after the largest suffrage campaign ever mounted, with New York City's margin carrying the state.",after:"Stood; widely credited with breaking congressional resistance to the Nineteenth Amendment."},
+{cat:"Women's suffrage",d:191511,dd:"1915",place:"Pennsylvania",measure:"Women's suffrage amendment",type:"Legislative referral",res:"Rights denied",margin:"~54\u201346",summary:"The fourth Eastern defeat of November 1915.",after:"Nineteenth Amendment (1920)."},
+{cat:"Immigration & national origin",d:187909,dd:"1879",place:"California",measure:"Advisory referendum on Chinese immigration",type:"Advisory referendum",res:"Rights denied",margin:"154,638\u2013883",summary:"California's electorate registered its judgment on the presence of Chinese immigrants at a ratio of 175 to 1, the purest recorded measurement of a majority voting on a minority's existence.",after:"No correction came from the ballot; the vote fed directly into the federal Chinese Exclusion Act of 1882. The instrument's answer stood for six decades."},
+{cat:"Immigration & national origin",d:192011,dd:"1920",place:"California",measure:"Alien Land Law initiative",type:"Citizen initiative",res:"Rights stripped",margin:"~75\u201325",summary:"Voters strengthened the 1913 Alien Land Law by roughly three to one, closing the leasing and guardianship arrangements Japanese immigrant farmers had used to keep working land they were barred from owning.",after:"Gutted by Oyama v. California (1948) and the California Supreme Court's Sei Fujii decision (1952); California voters finally repealed the law in 1956, three decades of livelihoods later."},
+{cat:"Immigration & national origin",d:199411,dd:"1994",place:"California",measure:"Proposition 187 (Save Our State)",type:"Citizen initiative",res:"Rights stripped",margin:"59\u201341",summary:"Voters barred undocumented immigrants, including children, from public schools, non-emergency health care, and social services, with mandatory reporting by teachers and doctors.",after:"Enjoined within days and largely invalidated in federal court (LULAC v. Wilson); the state dropped its appeal in 1999. Never took effect, because a court stopped it."},
+{cat:"Religious liberty",d:192211,dd:"1922",place:"Oregon",measure:"Compulsory Public School initiative",type:"Citizen initiative",res:"Rights stripped",margin:"~53\u201347",summary:"A Klan-backed initiative requiring all children to attend public schools, designed to destroy Catholic schooling in the state, approved by the electorate.",after:"Struck down 9 to 0 in Pierce v. Society of Sisters (1925), which held that the child is not the mere creature of the state. The unanimous correction came from the Court, not a second vote."},
+{cat:"School integration",d:197811,dd:"1978",place:"Washington State",measure:"Initiative 350 (busing ban)",type:"Citizen initiative",res:"Rights stripped",margin:"~66\u201334",summary:"A statewide initiative prohibited school assignment for the purpose of racial integration while permitting busing for every other purpose, passed by roughly two to one in direct response to Seattle's voluntary desegregation plan.",after:"Struck down in Washington v. Seattle School District No. 1 (1982), which with Hunter v. Erickson anchors the political-restructuring doctrine: restructuring the process to burden integration alone is the constitutional defect."},
+{cat:"Gay & lesbian rights",d:197706,dd:"Jun 1977",place:"Dade County, FL",measure:"Repeal of sexual orientation nondiscrimination ordinance",type:"Repeal referendum",res:"Rights stripped",margin:"69\u201331",summary:"The Anita Bryant Save Our Children campaign repealed Miami-Dade's months-old nondiscrimination ordinance by more than two to one, launching the national repeal playbook.",after:"Protections were not restored until 1998, twenty-one years later, and survived a 2002 repeal attempt by a bare majority."},
+{cat:"Gay & lesbian rights",d:197804,dd:"Apr 1978",place:"St. Paul, MN",measure:"Repeal of nondiscrimination ordinance",type:"Repeal referendum",res:"Rights stripped",margin:"~63\u201337",summary:"The second stop of the 1978 repeal wave; a four-year-old ordinance erased at the ballot.",after:"St. Paul did not restore protections until 1990."},
+{cat:"Gay & lesbian rights",d:197805,dd:"May 1978",place:"Wichita, KS",measure:"Repeal of nondiscrimination ordinance",type:"Repeal referendum",res:"Rights stripped",margin:"83\u201317",summary:"The most lopsided of the 1978 repeals, five to one against a months-old ordinance.",after:"No local correction for decades; federal protection in employment arrived only with Bostock v. Clayton County (2020)."},
+{cat:"Gay & lesbian rights",d:197805,dd:"May 1978",place:"Eugene, OR",measure:"Repeal of nondiscrimination ordinance",type:"Repeal referendum",res:"Rights stripped",margin:"~63\u201337",summary:"The third repeal in five weeks, in a progressive university town, demonstrating the pattern was not regional.",after:"Oregon enacted statewide protections by legislation in 2007."},
+{cat:"Gay & lesbian rights",d:199211,dd:"1992",place:"Colorado",measure:"Amendment 2",type:"Citizen initiative",res:"Barrier enacted",margin:"53\u201347",summary:"A statewide initiative prohibited every level of Colorado government from ever adopting any protection for gay, lesbian, or bisexual people, converting one group's access to the ordinary political process into a constitutional nullity.",after:"Struck down in Romer v. Evans (1996): a state cannot deem a class of persons a stranger to its laws. The correction came from the Court."},
+{cat:"Gay & lesbian rights",d:199311,dd:"1993",place:"Cincinnati, OH",measure:"Issue 3 charter amendment",type:"Charter amendment",res:"Barrier enacted",margin:"62\u201338",summary:"The municipal version of Amendment 2: a charter bar on any gay rights protection, ever, approved by referendum.",after:"Upheld by the Sixth Circuit, then repealed by Cincinnati voters themselves in 2004, eleven years later, one of the few ballot corrections in the record."},
+{cat:"Gay & lesbian rights",d:199802,dd:"Feb 1998",place:"Maine",measure:"People's veto of nondiscrimination law",type:"People's veto",res:"Rights stripped",margin:"52\u201348",summary:"Voters repealed the sexual orientation nondiscrimination law the legislature had just enacted, making Maine the first state to erase such a statute at the ballot.",after:"Voters declined protections again in 2000; the law finally survived a people's veto attempt in 2005, seven years and three statewide campaigns after first passage."},
+{cat:"Gay & lesbian rights",d:200011,dd:"2000",place:"Maine",measure:"Referendum to ratify nondiscrimination protections",type:"Popular referendum",res:"Rights denied",margin:"~51\u201349",summary:"Asked a second time, Maine voters again declined to extend nondiscrimination protections.",after:"Protections finally held at the ballot in 2005, 55 to 45; three campaigns to keep one statute."},
+{cat:"Gay & lesbian rights",d:201511,dd:"Nov 2015",place:"Houston, TX",measure:"Proposition 1 (HERO repeal)",type:"Repeal referendum",res:"Rights stripped",margin:"61\u201339",summary:"The Houston Equal Rights Ordinance, covering 15 protected classes, was repealed by referendum after a campaign reduced to a single bathroom-predator slogan, in the fourth-largest and one of the most diverse cities in America, in 2015.",after:"Houston has had no comprehensive civil rights ordinance since. The modern data point that forecloses the claim that the pattern belongs to another era."},
+{cat:"Marriage",d:199811,dd:"1998",place:"Alaska",measure:"Ballot Measure 2",type:"Constitutional ballot measure",res:"Rights denied",margin:"68\u201332",summary:"The first state constitutional marriage ban, placed on the ballot to preempt litigation, opened the 14-year streak.",after:"Void after Obergefell v. Hodges (2015)."},
+{cat:"Marriage",d:199811,dd:"1998",place:"Hawaii",measure:"Constitutional Amendment 2",type:"Legislative referral",res:"Rights denied",margin:"69\u201331",summary:"Responding to Baehr v. Lewin, the state supreme court case that had put marriage equality within reach, voters empowered the legislature to reserve marriage to opposite-sex couples, extinguishing the litigation.",after:"Hawaii enacted marriage equality by statute in 2013; Obergefell (2015) settled the question nationally."},
+{cat:"Marriage",d:200003,dd:"2000",place:"California",measure:"Proposition 22",type:"Statutory initiative",res:"Rights denied",margin:"61\u201339",summary:"A statutory initiative confining marriage to a man and a woman.",after:"Struck down by the California Supreme Court in In re Marriage Cases (May 2008), which opened marriage for six months and set the stage for Proposition 8."},
+{cat:"Marriage",d:200011,dd:"2000",place:"Nebraska",measure:"Initiative 416",type:"Citizen initiative",res:"Rights denied",margin:"70\u201330",summary:"The broadest of the early bans, prohibiting not only marriage but civil unions and domestic partnerships in any form.",after:"Briefly struck down in federal district court (2005), reinstated by the Eighth Circuit (2006); void after Obergefell (2015)."},
+{cat:"Marriage",d:200011,dd:"2000",place:"Nevada",measure:"Question 2 (first vote)",type:"Citizen initiative",res:"Rights denied",margin:"69\u201331",summary:"First of the two successive-election approvals Nevada's constitution requires.",after:"Nevada voters repealed the ban and affirmed marriage equality in 2020, the first state to do so, five years after Obergefell had already settled it."},
+{cat:"Marriage",d:200211,dd:"2002",place:"Nevada",measure:"Question 2 (second vote)",type:"Citizen initiative",res:"Rights denied",margin:"67\u201333",summary:"Second required approval; the ban entered the state constitution.",after:"Void after Obergefell (2015); formally repealed by voters in 2020."},
+{cat:"Marriage",d:200408,dd:"Aug 2004",place:"Missouri",measure:"Constitutional Amendment 2",type:"Constitutional ballot measure",res:"Rights denied",margin:"71\u201329",summary:"The first ballot test after Goodridge v. Department of Public Health opened marriage in Massachusetts; the answer was 71 percent.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200409,dd:"Sep 2004",place:"Louisiana",measure:"Constitutional Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"78\u201322",summary:"Passed nearly four to one in a September special election.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Arkansas",measure:"Constitutional Amendment 3",type:"Citizen initiative",res:"Rights denied",margin:"75\u201325",summary:"Part of the 13-state 2004 wave coordinated with the presidential election.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Georgia",measure:"Constitutional Amendment 1 (Question 1)",type:"Legislative referral",res:"Rights denied",margin:"76\u201324",summary:"2004 wave.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Kentucky",measure:"Constitutional Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"75\u201325",summary:"2004 wave; also barred recognition of civil unions.",after:"Kentucky's ban was among those directly struck down in Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Michigan",measure:"Proposal 2",type:"Citizen initiative",res:"Rights denied",margin:"59\u201341",summary:"2004 wave; construed by Michigan courts to strip public-employer partner benefits as well.",after:"Michigan's ban was directly struck down in Obergefell (2015), which consolidated DeBoer v. Snyder."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Mississippi",measure:"Constitutional Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"86\u201314",summary:"The largest margin of the entire streak, six to one.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Montana",measure:"Initiative 96 (CI-96)",type:"Citizen initiative",res:"Rights denied",margin:"67\u201333",summary:"2004 wave.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"North Dakota",measure:"Measure 1",type:"Citizen initiative",res:"Rights denied",margin:"73\u201327",summary:"2004 wave.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Ohio",measure:"Issue 1",type:"Citizen initiative",res:"Rights denied",margin:"62\u201338",summary:"2004 wave; among the broadest texts, barring any legal status approximating marriage.",after:"Ohio's ban was the lead ban struck down in Obergefell v. Hodges (2015), the case that carries its name from an Ohio plaintiff."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Oklahoma",measure:"State Question 711",type:"Legislative referral",res:"Rights denied",margin:"76\u201324",summary:"2004 wave.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Oregon",measure:"Measure 36",type:"Citizen initiative",res:"Rights denied",margin:"57\u201343",summary:"The narrowest of the 2004 wave, in the bluest state to pass one that year.",after:"Struck down in federal court (2014); void after Obergefell (2015)."},
+{cat:"Marriage",d:200411,dd:"Nov 2004",place:"Utah",measure:"Constitutional Amendment 3",type:"Legislative referral",res:"Rights denied",margin:"66\u201334",summary:"2004 wave; also barred any other domestic union from equivalent legal effect.",after:"Struck down in Kitchen v. Herbert (2013\u201314), the Tenth Circuit ruling that accelerated the endgame; void after Obergefell (2015)."},
+{cat:"Marriage",d:200504,dd:"Apr 2005",place:"Kansas",measure:"Constitutional amendment",type:"Legislative referral",res:"Rights denied",margin:"70\u201330",summary:"Passed in a spring election.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200511,dd:"Nov 2005",place:"Texas",measure:"Proposition 2",type:"Legislative referral",res:"Rights denied",margin:"76\u201324",summary:"Constitutionalized the existing statutory ban.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200606,dd:"Jun 2006",place:"Alabama",measure:"Amendment 774 (Sanctity of Marriage)",type:"Legislative referral",res:"Rights denied",margin:"81\u201319",summary:"Four to one in a June primary election.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Arizona",measure:"Proposition 107",type:"Citizen initiative",res:"Rights affirmed",margin:"48\u201352 (rejected)",summary:"The only pre-2012 rejection of a marriage ban anywhere in America, and the campaign that achieved it did so largely by arguing the measure's domestic-partnership language would harm unmarried straight seniors, not by defending the minority at issue.",after:"Arizona voters reversed themselves two years later, passing a narrower ban in 2008. Even the streak's lone exception was rescinded."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Colorado",measure:"Amendment 43",type:"Citizen initiative",res:"Rights denied",margin:"55\u201345",summary:"Passed the same night voters rejected a domestic-partnership referendum.",after:"Void after Obergefell (2015); Colorado voters formally repealed the dead ban in 2024."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Idaho",measure:"Amendment 2 (HJR 2)",type:"Legislative referral",res:"Rights denied",margin:"63\u201337",summary:"2006 cycle.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"South Carolina",measure:"Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"78\u201322",summary:"2006 cycle.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"South Dakota",measure:"Amendment C",type:"Legislative referral",res:"Rights denied",margin:"52\u201348",summary:"The narrowest ban victory of the streak, an early signal that margins were compressing.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Tennessee",measure:"Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"81\u201319",summary:"2006 cycle.",after:"Tennessee's ban was among those consolidated and struck down in Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Virginia",measure:"Marshall-Newman Amendment",type:"Legislative referral",res:"Rights denied",margin:"57\u201343",summary:"Barred marriage and any union intended to approximate it.",after:"Struck down in Bostic v. Schaefer (4th Cir. 2014); void after Obergefell (2015)."},
+{cat:"Marriage",d:200611,dd:"Nov 2006",place:"Wisconsin",measure:"Referendum 1",type:"Legislative referral",res:"Rights denied",margin:"59\u201341",summary:"2006 cycle; also barred civil unions.",after:"Struck down in Wolf v. Walker (2014); void after Obergefell (2015)."},
+{cat:"Marriage",d:200811,dd:"Nov 2008",place:"Arizona",measure:"Proposition 102",type:"Legislative referral",res:"Rights denied",margin:"56\u201344",summary:"A rewritten, narrower ban passed two years after Arizona voters had rejected Proposition 107, erasing the streak's only exception.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200811,dd:"Nov 2008",place:"California",measure:"Proposition 8",type:"Citizen initiative",res:"Rights stripped",margin:"52\u201348",summary:"The purest specimen of the instrument's ceiling of harm: voters extinguished a right that 18,000 couples were actively exercising under a state supreme court ruling. A majority examined a minority's existing legal rights and voted them away.",after:"Held unconstitutional in federal court (Perry, 2010); marriage resumed after Hollingsworth v. Perry (2013). The 18,000 marriages performed before the vote were never invalidated."},
+{cat:"Marriage",d:200811,dd:"Nov 2008",place:"Florida",measure:"Amendment 2",type:"Citizen initiative",res:"Rights denied",margin:"62\u201338",summary:"Cleared Florida's 60 percent supermajority threshold for constitutional amendments.",after:"Void after Obergefell (2015)."},
+{cat:"Marriage",d:200911,dd:"Nov 2009",place:"Maine",measure:"Question 1 (people's veto)",type:"People's veto",res:"Rights stripped",margin:"53\u201347",summary:"Voters repealed the marriage equality law the legislature had enacted six months earlier, the second time Maine's people's veto erased a just-passed gay rights statute.",after:"Maine voters enacted marriage by initiative in November 2012, the first popular-vote enactment in American history, three years later."},
+{cat:"Marriage",d:201205,dd:"May 2012",place:"North Carolina",measure:"Amendment 1",type:"Legislative referral",res:"Rights denied",margin:"61\u201339",summary:"The last marriage ban ever passed in America, 61 to 39, six months before the streak broke, the tightest possible illustration of the ballot as a lagging indicator.",after:"Struck down in federal court (Oct 2014); void after Obergefell (2015)."},
+{cat:"Marriage",d:201211,dd:"Nov 2012",place:"Maine",measure:"Question 1",type:"Citizen initiative",res:"Rights affirmed",margin:"53\u201347",summary:"The first enactment of marriage equality by popular vote in American history, arriving after national polling had crossed majority support, the President had endorsed, and federal courts were dismantling DOMA. The ballot ratified a consensus built entirely elsewhere.",after:"Stood; superseded by Obergefell (2015) as the national resolution."},
+{cat:"Marriage",d:201211,dd:"Nov 2012",place:"Maryland",measure:"Question 6",type:"Popular referendum",res:"Rights affirmed",margin:"52\u201348",summary:"Voters upheld the legislature's marriage law against a petition to overturn it; a defensive win, protecting what an institution had already done.",after:"Stood; Obergefell (2015)."},
+{cat:"Marriage",d:201211,dd:"Nov 2012",place:"Minnesota",measure:"Amendment 1",type:"Legislative referral",res:"Rights affirmed",margin:"47\u201351 (rejected)",summary:"Voters rejected a proposed constitutional ban, the first outright rejection since Arizona 2006, without yet legalizing marriage.",after:"The legislature enacted marriage equality six months later; Obergefell (2015)."},
+{cat:"Marriage",d:201211,dd:"Nov 2012",place:"Washington",measure:"Referendum 74",type:"Popular referendum",res:"Rights affirmed",margin:"54\u201346",summary:"Voters approved the legislature's marriage law against a repeal petition, completing the November 2012 sweep that ended a 35-loss streak in a single night.",after:"Stood; Obergefell (2015). The final tally for 1998\u20132012: 35 ban victories, one reversed rejection, and a last-month sweep after the outcome was already decided elsewhere."},
+{cat:"Housing",d:195011,dd:"1950",place:"California",measure:"Proposition 10 (Article 34)",type:"Citizen initiative",res:"Barrier enacted",margin:"~51\u201349",summary:"A real estate industry initiative wrote into the state constitution a requirement that every publicly funded low-rent housing project win a local referendum before it can be built, the only category of construction so burdened.",after:"Upheld in James v. Valtierra (1971). Still in the California Constitution 75 years later; repeated legislative attempts to place its repeal before voters have stalled. Its per-project vetoes are credited with blocking tens of thousands of units."},
+{cat:"Housing",d:195206,dd:"1952",place:"Los Angeles, CA",measure:"Public housing referendum (Prop B)",type:"Popular referendum",res:"Rights stripped",margin:"~3 to 2",summary:"Voters killed the city's federally contracted 10,000-unit public housing program, already approved and partially underway, after a red-baiting campaign against it.",after:"Never revived. The cleared Chavez Ravine site, whose displaced Mexican American residents had been promised housing, was conveyed to the Dodgers. The lost units were never built."},
+{cat:"Housing",d:196304,dd:"Apr 1963",place:"Berkeley, CA",measure:"Fair housing ordinance referendum",type:"Repeal referendum",res:"Rights stripped",margin:"~52\u201348",summary:"One of the first municipal fair housing ordinances in the country was overturned at the ballot in one of the most liberal cities in the country, the opening result of the 1963\u201364 wave.",after:"Superseded by California's Rumford Act (1963), which Proposition 14 then attempted to repeal statewide the following year."},
+{cat:"Housing",d:196403,dd:"Mar 1964",place:"Seattle, WA",measure:"Open housing ordinance referendum",type:"Popular referendum",res:"Rights denied",margin:"~2 to 1",summary:"Seattle's proposed open housing ordinance was rejected by roughly two to one.",after:"Seattle's council enacted open housing in 1968, after the federal Fair Housing Act, without asking again."},
+{cat:"Housing",d:196411,dd:"1964",place:"Tacoma, WA",measure:"Fair housing ordinance referendum",type:"Repeal referendum",res:"Rights stripped",margin:"~2 to 1",summary:"Tacoma's fair housing ordinance was repealed by roughly two to one in the same wave.",after:"Federal Fair Housing Act (1968) superseded."},
+{cat:"Housing",d:196409,dd:"Sep 1964",place:"Detroit, MI",measure:"Homeowners' Rights Ordinance",type:"Citizen initiative",res:"Barrier enacted",margin:"~55\u201345",summary:"Voters affirmatively enacted a pro-discrimination measure guaranteeing an owner's right to choose buyers and tenants, a ballot-box endorsement of housing discrimination by name.",after:"Declared unconstitutional by Michigan courts in 1965 before taking effect. The correction came from the bench within a year."},
+{cat:"Housing",d:196411,dd:"Nov 1964",place:"Akron, OH",measure:"Charter amendment: fair housing ordinances require referendum approval",type:"Charter amendment",res:"Barrier enacted",margin:"~55\u201345",summary:"Voters amended the city charter so that any fair housing ordinance, and only that category of ordinance, required popular approval before taking effect, suspending the existing ordinance in the process.",after:"Struck down in Hunter v. Erickson (1969): placing a special procedural burden on housing discrimination protections alone violates equal protection. The constitutional anchor for the entire selective-referendum question."},
+{cat:"Housing",d:196411,dd:"Nov 1964",place:"California",measure:"Proposition 14 (Rumford Act repeal)",type:"Citizen initiative",res:"Rights stripped",margin:"65\u201335",summary:"A real estate industry initiative repealed the state's year-old fair housing law and constitutionally barred California and every locality in it from ever adopting fair housing legislation, approved by two-thirds of the electorate.",after:"Struck down by the California Supreme Court (1966), affirmed in Reitman v. Mulkey (1967). The definitive demonstration of what the housing plebiscite produces when used, corrected only by courts."},
+{cat:"Housing",d:196711,dd:"1967",place:"Toledo, OH",measure:"Fair housing ordinance referendum",type:"Popular referendum",res:"Rights denied",margin:"~2 to 1 (approx.)",summary:"Toledo voters rejected a fair housing ordinance late in the wave.",after:"Superseded by the federal Fair Housing Act (April 1968), enacted by Congress in part because the ballot route had failed everywhere it was tried."},
+{cat:"Housing",d:196802,dd:"Feb 1968",place:"Flint, MI",measure:"Open housing ordinance referendum",type:"Popular referendum",res:"Rights affirmed",margin:"~30 votes of ~40,000",summary:"The first city in America to approve open housing by popular vote, by roughly 30 votes out of 40,000 cast. The best result a housing rights referendum ever achieved in the pre-FHA era was a coin flip.",after:"Stood. The exception that concedes the rule: the instrument's ceiling of help, measured in dozens of votes."},
+{cat:"Housing",d:196805,dd:"May 1968",place:"Oak Park, IL",measure:"Fair Housing Ordinance; 10,156-signature demand for a referendum",type:"Referendum demand refused",res:"Referendum refused",margin:"10,156 of 36,660 registered voters petitioned",summary:"Roughly 28 percent of the registered electorate petitioned to put the Fair Housing Ordinance to a June referendum. The Village Board ruled against submitting it and passed the ordinance 5 to 2 on May 6, 1968.",after:"The ordinance became the foundation of Oak Park's integration and its civic identity. Every commemoration of 1968 is a commemoration of a Board that declined a referendum on minority rights and legislated instead."},
+{cat:"Housing",d:197111,dd:"1971",place:"Eastlake, OH",measure:"Charter amendment: 55% referendum approval for land use changes",type:"Charter amendment",res:"Barrier enacted",margin:"Adopted by charter vote",summary:"Adopted amid a pending multifamily housing proposal, the charter amendment required any council-approved land use change to win 55 percent at referendum, a supermajority popular veto aimed at apartments.",after:"Upheld in City of Eastlake v. Forest City Enterprises (1976) as a lawful reservation of legislative power; the case that establishes zoning referenda are legal in general, while Hunter establishes that targeting fair housing alone is not."},
+{cat:"Housing",d:199611,dd:"1996",place:"Cuyahoga Falls, OH",measure:"Referendum petition against affordable housing site plan",type:"Popular referendum",res:"Barrier enacted",margin:"Petition suspended the approved plan",summary:"A referendum petition suspended the city's already-approved site plan for a low-income townhome development, stalling the project amid a campaign of openly racialized opposition.",after:"The Supreme Court found no constitutional violation on the facts (2003). The delay itself was the weapon; the case demonstrates the referendum's capacity to obstruct housing without ever needing to win on substance."},
+{cat:"Housing",d:201311,dd:"Nov 2013",place:"Palo Alto, CA",measure:"Measure D (Maybell senior housing)",type:"Popular referendum",res:"Rights stripped",margin:"~56\u201344",summary:"Voters overturned the city council's unanimous approval of a 60-unit affordable senior housing development, revoking an approval already granted.",after:"The site was sold for market-rate single-family homes. The seniors' units were never built anywhere."},
+{cat:"Housing",d:202011,dd:"Nov 2020",place:"Alameda, CA",measure:"Measure Z (repeal of the 1973 multifamily housing ban)",type:"Charter amendment",res:"Rights denied",margin:"~60\u201340",summary:"Asked to remove a 1973 charter provision banning apartment construction citywide, a Bay Area electorate that votes overwhelmingly Democratic chose three to two to keep the apartment ban, in 2020.",after:"State housing law now overrides the charter ban in practice for many sites. The row that forecloses the entire times-have-changed rebuttal: the housing referendum performing identically in the present tense."}
+];
+const RESORD={"Rights stripped":1,"Rights denied":2,"Barrier enacted":3,"Referendum refused":4,"Rights affirmed":5};
+const RESCLS={"Rights stripped":"r-stripped","Rights denied":"r-denied","Barrier enacted":"r-barrier","Referendum refused":"r-refused","Rights affirmed":"r-affirmed"};
+const labels={cat:"Category",d:"Date",place:"Place",type:"Type",res:"Result"};
+let sortKey='d',sortDir=1,fcat='',fres='',fq='';
+function visible(){
+  const q=fq.trim().toLowerCase();
+  return DATA.filter(r=>(!fcat||r.cat===fcat)&&(!fres||r.res===fres)&&(!q||r.place.toLowerCase().includes(q)||r.measure.toLowerCase().includes(q)));
+}
+function render(){
+  const rows=visible().sort((a,b)=>{
+    let x,y;
+    if(sortKey==='res'){x=RESORD[a.res];y=RESORD[b.res];}
+    else{x=a[sortKey];y=b[sortKey];}
+    if(typeof x==='string')return sortDir*x.localeCompare(y);
+    return sortDir*(x-y);
+  });
+  document.querySelector('tbody').innerHTML=rows.map((r,i)=>
+    `<tr class="${r.place==='Oak Park, IL'?'op':''}">`+
+    `<td class="cat">${r.cat}</td>`+
+    `<td class="mono">${r.dd}</td>`+
+    `<td class="place"><span class="rank">${String(i+1).padStart(2,'0')}</span> ${r.place}</td>`+
+    `<td class="measure">${r.measure}</td>`+
+    `<td class="mono">${r.type}</td>`+
+    `<td class="result ${RESCLS[r.res]}">${r.res}</td>`+
+    `<td class="mono">${r.margin}</td>`+
+    `<td class="summary">${r.summary}</td>`+
+    `<td class="after">${r.after}</td>`+
+    `</tr>`).join('');
+  document.querySelectorAll('thead th.sortable').forEach(th=>{
+    const on=th.dataset.k===sortKey;
+    th.classList.toggle('active',on);
+    th.querySelector('.arr').textContent=on?(sortDir<0?'\u25BE':'\u25B4'):'';
+  });
+  document.getElementById('sortlabel').textContent=labels[sortKey]+' ('+(sortDir<0?'descending':'ascending')+')';
+  const n=rows.length;
+  document.getElementById('count').textContent=n===DATA.length?`${n} of ${DATA.length} entries`:`${n} of ${DATA.length} entries shown`;
+}
+const cats=[...new Set(DATA.map(r=>r.cat))];
+const catSel=document.getElementById('fcat');
+cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
+const resSel=document.getElementById('fres');
+Object.keys(RESORD).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;resSel.appendChild(o);});
+document.querySelectorAll('thead th.sortable').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const k=th.dataset.k;
+    if(k===sortKey){sortDir*=-1;}else{sortKey=k;sortDir=1;}
+    render();
+  });
+});
+catSel.addEventListener('change',e=>{fcat=e.target.value;render();});
+resSel.addEventListener('change',e=>{fres=e.target.value;render();});
+document.getElementById('fq').addEventListener('input',e=>{fq=e.target.value;render();});
+document.getElementById('fclear').addEventListener('click',()=>{
+  fcat=fres=fq='';catSel.value='';resSel.value='';document.getElementById('fq').value='';render();
+});
+render();
+</script>
+</body>
+</html>
