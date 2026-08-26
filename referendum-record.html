@@ -201,11 +201,21 @@ const RESORD={"Rights stripped":1,"Rights denied":2,"Barrier enacted":3,"Referen
 const RESCLS={"Rights stripped":"r-stripped","Rights denied":"r-denied","Barrier enacted":"r-barrier","Referendum refused":"r-refused","Rights affirmed":"r-affirmed"};
 const labels={cat:"Category",d:"Date",place:"Place",type:"Type",res:"Result"};
 let sortKey='d',sortDir=1,fcat='',fres='',fq='';
+function syncURL(){
+  const p=new URLSearchParams();
+  if(fcat)p.set('cat',fcat);
+  if(fres)p.set('res',fres);
+  if(fq.trim())p.set('q',fq.trim());
+  if(sortKey!=='d'||sortDir!==1){p.set('sort',sortKey);if(sortDir<0)p.set('dir','desc');}
+  const qs=p.toString();
+  history.replaceState(null,'',qs?'?'+qs:location.pathname);
+}
 function visible(){
   const q=fq.trim().toLowerCase();
   return DATA.filter(r=>(!fcat||r.cat===fcat)&&(!fres||r.res===fres)&&(!q||r.place.toLowerCase().includes(q)||r.measure.toLowerCase().includes(q)));
 }
 function render(){
+  syncURL();
   const rows=visible().sort((a,b)=>{
     let x,y;
     if(sortKey==='res'){x=RESORD[a.res];y=RESORD[b.res];}
@@ -252,6 +262,14 @@ document.getElementById('fq').addEventListener('input',e=>{fq=e.target.value;ren
 document.getElementById('fclear').addEventListener('click',()=>{
   fcat=fres=fq='';catSel.value='';resSel.value='';document.getElementById('fq').value='';render();
 });
+(function(){
+  const p=new URLSearchParams(location.search);
+  const c=p.get('cat'),r=p.get('res'),q=p.get('q'),s=p.get('sort');
+  if(c&&cats.includes(c)){fcat=c;catSel.value=c;}
+  if(r&&RESORD[r]){fres=r;resSel.value=r;}
+  if(q){fq=q;document.getElementById('fq').value=q;}
+  if(s&&labels[s]){sortKey=s;sortDir=p.get('dir')==='desc'?-1:1;}
+})();
 render();
 </script>
 </body>
