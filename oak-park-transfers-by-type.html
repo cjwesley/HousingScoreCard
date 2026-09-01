@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oak Park sales and transfer taxes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fbfaf7;--ink:#16212b;--hair:#d8d4c9;--muted:#6b7178;--hi:#fdf3cf;--hi-edge:#e4c94e;--good:#1d5c3f;--bad:#8c1d18;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:'Libre Franklin',system-ui,sans-serif;font-size:15px;line-height:1.5;padding:48px 40px 72px}
+.wrap{max-width:1240px;margin:0 auto}
+header{border-bottom:3px double var(--ink);padding-bottom:22px;margin-bottom:22px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:38px;line-height:1.12;margin:0 0 12px;letter-spacing:-.01em}
+.dek{color:var(--muted);max-width:74ch;margin:0;font-size:16px}
+.stats{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--hair);margin-bottom:26px}
+.stat{padding:16px 28px 16px 0;margin-right:28px;border-right:1px solid var(--hair)}
+.stat:last-child{border-right:0}
+.stat .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:'Fraunces',Georgia,serif;font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:4px}
+.stat.hi .v{background:var(--hi);box-shadow:inset 4px 0 0 var(--hi-edge);padding:2px 10px 2px 12px;display:inline-block}
+.sortstate{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin:0 0 10px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:'IBM Plex Mono',monospace;font-size:13px;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;background:var(--paper);text-align:left;font-weight:600;padding:12px 14px;border-bottom:2px solid var(--ink);cursor:pointer;user-select:none;white-space:nowrap}
+thead th.num{text-align:right}
+thead th .arrow{color:var(--muted);margin-left:6px;font-size:11px}
+thead th.active{background:#f1efe8}
+thead th:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--hair);vertical-align:top}
+tbody td.num{text-align:right;white-space:nowrap}
+tbody td.rank{color:var(--muted);width:44px}
+tbody tr:hover td{background:#f4f2ec}
+tbody tr.hi td{background:var(--hi)}
+tbody tr.hi td:first-child{box-shadow:inset 4px 0 0 var(--hi-edge)}
+td.best{color:var(--good);font-weight:600}
+td.worst{color:var(--bad);font-weight:600}
+tfoot td{padding:14px;border-top:2px solid var(--ink);font-weight:600}
+tfoot td.num{text-align:right;white-space:nowrap}
+h2.subhead{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:22px;margin:0 0 10px}
+table.sub{width:auto;min-width:520px;margin:0 0 34px}
+table.sub thead th{cursor:default;position:static}
+table.sub tbody td{padding:9px 14px}
+footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--hair);color:var(--muted);font-size:13px;max-width:90ch}
+footer p{margin:0 0 8px}
+@media (max-width:720px){body{padding:24px 16px 48px}h1{font-size:28px}.stat .v{font-size:22px}.stat{padding-right:16px;margin-right:16px}}
+@media print{thead th{position:static}body{padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow" id="eyebrow"></p>
+  <h1 id="title"></h1>
+  <p class="dek" id="dek"></p>
+</header>
+<div class="stats" id="stats"></div>
+<h2 class="subhead">Median sale price by housing type</h2><div id="subtable"></div><p class="sortstate" id="sortstate"></p>
+<div class="scroll"><table id="t"><thead><tr id="hdr"></tr></thead><tbody id="body"></tbody><tfoot><tr id="foot"></tr></tfoot></table></div>
+<footer id="footer"></footer>
+</div>
+<script>
+const CONFIG = {"eyebrow": "Oak Park property transfers", "title": "Oak Park sales and transfer taxes by housing type", "dek": "Sixty-six recorded sales classified by Cook County Assessor property class, with the transfer stamps each one generates: the Village's $8 per $1,000 (paid by the buyer) plus the Illinois $1.00 and Cook County $0.50 per $1,000 (paid by the seller). Click any header to sort.", "stats": [["Sales", "66"], ["Median, all sales", "$542,500"], ["Median, single family", "$735,000"], ["Median, condo", "$205,500"], ["Village transfer tax", "$300,008"]], "subtableHTML": "<table class='sub'><thead><tr><th>Type (Assessor class)</th><th class='num'>Sales</th><th class='num'>Median</th><th class='num'>Low</th><th class='num'>High</th></tr></thead><tbody><tr><td>Single family</td><td class='num'>29</td><td class='num'>$735,000</td><td class='num'>$107,000</td><td class='num'>$1,800,000</td></tr><tr><td>Townhome</td><td class='num'>5</td><td class='num'>$620,000</td><td class='num'>$600,000</td><td class='num'>$922,500</td></tr><tr><td>Condo</td><td class='num'>27</td><td class='num'>$205,500</td><td class='num'>$115,000</td><td class='num'>$1,455,000</td></tr><tr><td>Multifamily (2-6 units)</td><td class='num'>1</td><td class='num'>$1,310,000</td><td class='num'>$1,310,000</td><td class='num'>$1,310,000</td></tr><tr><td>Commercial</td><td class='num'>2</td><td class='num'>$645,000</td><td class='num'>$340,000</td><td class='num'>$950,000</td></tr><tr><td>Vacant land</td><td class='num'>1</td><td class='num'>$700,000</td><td class='num'>$700,000</td><td class='num'>$700,000</td></tr><tr><td>Unverified</td><td class='num'>1</td><td class='num'>\u2013</td><td class='num'>$945,000</td><td class='num'>$945,000</td></tr></tbody></table>", "columns": [{"key": "address", "label": "Address", "fmt": "text"}, {"key": "type", "label": "Type", "fmt": "text", "tooltip": "Cook County Assessor property class, 2026 parcel universe"}, {"key": "cls", "label": "Class", "fmt": "text", "tooltip": "Assessor class code"}, {"key": "price", "label": "Price", "fmt": "money", "extremes": "highGood"}, {"key": "seller", "label": "Seller", "fmt": "text"}, {"key": "buyer", "label": "Buyer", "fmt": "text"}, {"key": "village", "label": "Village tax", "fmt": "money", "tooltip": "Oak Park: $8.00 per $1,000, buyer pays"}, {"key": "stco", "label": "State + County", "fmt": "money", "tooltip": "Illinois $1.00 + Cook County $0.50 per $1,000, seller pays"}, {"key": "total", "label": "Total stamps", "fmt": "money", "tooltip": "All three transfer taxes combined ($9.50 per $1,000)"}], "data": [{"address": "601 S Kenilworth Ave", "type": "Single family", "cls": "206", "price": 1001500, "seller": "Lorraine C Mccarthy Trust", "buyer": "Morris Jordan", "village": 8012.0, "stco": 1502.25, "total": 9514.25}, {"address": "515 S Highland Ave", "type": "Single family", "cls": "205", "price": 1049000, "seller": "Ceceu Daniel A", "buyer": "Harper Eric", "village": 8392.0, "stco": 1573.5, "total": 9965.5}, {"address": "820 N Grove Ave", "type": "Single family", "cls": "206", "price": 1275000, "seller": "Sturtevant Albert D", "buyer": "Long Aaron", "village": 10200.0, "stco": 1912.5, "total": 12112.5}, {"address": "617 S Lombard Ave", "type": "Multifamily (2-6 units)", "cls": "211", "price": 1310000, "seller": "Lakefront Inv Grp Llc", "buyer": "Chala Abraham", "village": 10480.0, "stco": 1965.0, "total": 12445.0}, {"address": "1111 Woodbine Ave", "type": "Single family", "cls": "206", "price": 1360000, "seller": "Obrien Daniel E", "buyer": "Snow Christopher", "village": 10880.0, "stco": 2040.0, "total": 12920.0}, {"address": "110 S Marion St", "type": "Condo", "cls": "299", "price": 1455000, "seller": "Bower William B Tr", "buyer": "Conway Linda J Tr", "village": 11640.0, "stco": 2182.5, "total": 13822.5}, {"address": "635 N Euclid Ave", "type": "Single family", "cls": "204", "price": 1800000, "seller": "Thibodeau Matthew R", "buyer": "Dormeier Joshua Logan", "village": 14400.0, "stco": 2700.0, "total": 17100.0}, {"address": "922 N Humphrey Ave", "type": "Single family", "cls": "202", "price": 107000, "seller": "Scott Mattie B", "buyer": "Mattie B Scott Trust Utd 05202026", "village": 856.0, "stco": 160.5, "total": 1016.5}, {"address": "1103 Holley Ct", "type": "Condo", "cls": "299", "price": 115000, "seller": "Jjir Oak Pk Llc", "buyer": "Navarro Jose Ivan Aguilar", "village": 920.0, "stco": 172.5, "total": 1092.5}, {"address": "306 Chicago Ave", "type": "Condo", "cls": "299", "price": 140000, "seller": "Us Bk Trust Natl Assn Tr", "buyer": "Hollar Llc", "village": 1120.0, "stco": 210.0, "total": 1330.0}, {"address": "417 Wisconsin Ave", "type": "Condo", "cls": "299", "price": 160000, "seller": "Medina William", "buyer": "Pickett Stephen", "village": 1280.0, "stco": 240.0, "total": 1520.0}, {"address": "415 Wesley Ave", "type": "Condo", "cls": "299", "price": 160000, "seller": "Jackson La Torsha Shanae", "buyer": "Tlacuatl Jacinto Ocotoxtle", "village": 1280.0, "stco": 240.0, "total": 1520.0}, {"address": "242 S Maple Ave", "type": "Condo", "cls": "299", "price": 166000, "seller": "Spear Julia Collins", "buyer": "Flammersfeld Abigail", "village": 1328.0, "stco": 249.0, "total": 1577.0}, {"address": "340 S Kenilworth Ave", "type": "Condo", "cls": "299", "price": 170000, "seller": "Vander Meulen Kyle F", "buyer": "Ptack Joseph", "village": 1360.0, "stco": 255.0, "total": 1615.0}, {"address": "842 S Wesley Ave", "type": "Condo", "cls": "299", "price": 173000, "seller": "Ekpenyong John E", "buyer": "Carrasco Karen", "village": 1384.0, "stco": 259.5, "total": 1643.5}, {"address": "219 W Chicago Ave", "type": "Condo", "cls": "299", "price": 175000, "seller": "Parenti-White Patricia", "buyer": "Lozano Kassandra L", "village": 1400.0, "stco": 262.5, "total": 1662.5}, {"address": "1127 Erie St", "type": "Condo", "cls": "299", "price": 176000, "seller": "Maxwell Matthew", "buyer": "Wheatley Mary", "village": 1408.0, "stco": 264.0, "total": 1672.0}, {"address": "433 N Lombard Ave", "type": "Condo", "cls": "299", "price": 183000, "seller": "Moore Michael C", "buyer": "Moy Martin", "village": 1464.0, "stco": 274.5, "total": 1738.5}, {"address": "1126 W Washington Blvd", "type": "Condo", "cls": "299", "price": 188500, "seller": "Rani Assoc Llc Series 112226", "buyer": "Davis Corliss", "village": 1508.0, "stco": 282.75, "total": 1790.75}, {"address": "443 N Lombard Ave", "type": "Condo", "cls": "299", "price": 190000, "seller": "Byrne Alyssa B", "buyer": "Kislowski Iii Joseph Stanley", "village": 1520.0, "stco": 285.0, "total": 1805.0}, {"address": "1025 Randolph St", "type": "Condo", "cls": "299", "price": 200000, "seller": "Rodriguez-Anglero Dianisa M", "buyer": "Cortes Rafael", "village": 1600.0, "stco": 300.0, "total": 1900.0}, {"address": "6436 Roosevelt Rd", "type": "Condo", "cls": "299", "price": 205500, "seller": "Ocasek Thomas", "buyer": "Orlin Caroline Sara", "village": 1644.0, "stco": 308.25, "total": 1952.25}, {"address": "1014 Gunderson Ave", "type": "Single family", "cls": "202", "price": 221000, "seller": "Thomas Judy K", "buyer": "Terra Home Const Llc", "village": 1768.0, "stco": 331.5, "total": 2099.5}, {"address": "1033 Ontario St", "type": "Condo", "cls": "299", "price": 242500, "seller": "Salah Lynn Z", "buyer": "Tonelli Alvise", "village": 1940.0, "stco": 363.75, "total": 2303.75}, {"address": "403 N Marion St", "type": "Condo", "cls": "299", "price": 249000, "seller": "Gifford Carol Tr", "buyer": "Fort Cheryl", "village": 1992.0, "stco": 373.5, "total": 2365.5}, {"address": "230 N Oak Park Ave", "type": "Condo", "cls": "299", "price": 250000, "seller": "Brose Parker", "buyer": "Wratten William B", "village": 2000.0, "stco": 375.0, "total": 2375.0}, {"address": "436 N Harvey Ave", "type": "Condo", "cls": "299", "price": 275000, "seller": "Werblo Tracy M", "buyer": "Wrobel Nicole E", "village": 2200.0, "stco": 412.5, "total": 2612.5}, {"address": "224 S Oak Park Ave", "type": "Condo", "cls": "299", "price": 305000, "seller": "Haley Mary Pat", "buyer": "Aigner Elena", "village": 2440.0, "stco": 457.5, "total": 2897.5}, {"address": "530 Washington Blvd", "type": "Condo", "cls": "299", "price": 315000, "seller": "Patner Margaret R Tr", "buyer": "Collado Melissa Tr", "village": 2520.0, "stco": 472.5, "total": 2992.5}, {"address": "407 S Oak Park Ave", "type": "Condo", "cls": "299", "price": 330000, "seller": "Lehrer Nancy J", "buyer": "Scarola Patricia", "village": 2640.0, "stco": 495.0, "total": 3135.0}, {"address": "1112 Lake St", "type": "Commercial", "cls": "599", "price": 340000, "seller": "Kek Llc", "buyer": "1112 Oak Pk Llc", "village": 2720.0, "stco": 510.0, "total": 3230.0}, {"address": "434 S Lombard Ave", "type": "Condo", "cls": "299", "price": 343000, "seller": "Spell Ashley W", "buyer": "Reese Cameron Michael", "village": 2744.0, "stco": 514.5, "total": 3258.5}, {"address": "125 N Euclid Ave", "type": "Condo", "cls": "299", "price": 350000, "seller": "Saint Martin Michelle", "buyer": "Trinh Hong", "village": 2800.0, "stco": 525.0, "total": 3325.0}, {"address": "222 N Marion St", "type": "Condo", "cls": "299", "price": 352500, "seller": "Petersen Janet S Trust", "buyer": "Voss Melissa", "village": 2820.0, "stco": 528.75, "total": 3348.75}, {"address": "1118 W Washington Blvd", "type": "Condo", "cls": "299", "price": 375000, "seller": "Rini Christine M", "buyer": "Rhodes Sharon", "village": 3000.0, "stco": 562.5, "total": 3562.5}, {"address": "222 Le Moyne Pky", "type": "Single family", "cls": "204", "price": 405000, "seller": "Anderson Jacqueline", "buyer": "Bey Valencia Scott", "village": 3240.0, "stco": 607.5, "total": 3847.5}, {"address": "1106 Clarence Ave", "type": "Single family", "cls": "205", "price": 425000, "seller": "Short James D", "buyer": "Johnston Joanne L Tr", "village": 3400.0, "stco": 637.5, "total": 4037.5}, {"address": "616 S Cuyler Ave", "type": "Single family", "cls": "203", "price": 465000, "seller": "Kurek Sherry", "buyer": "Vanek Tess Callaghan", "village": 3720.0, "stco": 697.5, "total": 4417.5}, {"address": "304 N Grove Ave", "type": "Condo", "cls": "299", "price": 490000, "seller": "Chicago Title Land Trust Co Tr", "buyer": "Lotti Samantha Alexis", "village": 3920.0, "stco": 735.0, "total": 4655.0}, {"address": "512 S Grove Ave", "type": "Single family", "cls": "202", "price": 510000, "seller": "Woods Bernard J Tr", "buyer": "Ellis Lisandra Vila", "village": 4080.0, "stco": 765.0, "total": 4845.0}, {"address": "828 S Taylor Ave", "type": "Single family", "cls": "203", "price": 575000, "seller": "Carr Sandra", "buyer": "Sturm Hans Tr", "village": 4600.0, "stco": 862.5, "total": 5462.5}, {"address": "110 Bishop Quarter Ln", "type": "Townhome", "cls": "295", "price": 600000, "seller": "Schaub David E", "buyer": "Ciacciarelli Michael P", "village": 4800.0, "stco": 900.0, "total": 5700.0}, {"address": "1192 Clarence Ave", "type": "Townhome", "cls": "295", "price": 610000, "seller": "Francis Alicia", "buyer": "Chicago Title Land Trust Co Tr", "village": 4880.0, "stco": 915.0, "total": 5795.0}, {"address": "821 N Grove Ave", "type": "Single family", "cls": "203", "price": 617000, "seller": "Tierney Bryann L Tr", "buyer": "Hoge Jonathan", "village": 4936.0, "stco": 925.5, "total": 5861.5}, {"address": "1033 Lincoln Trl", "type": "Townhome", "cls": "295", "price": 620000, "seller": "Mcdonnell Vera Tr", "buyer": "Forde John", "village": 4960.0, "stco": 930.0, "total": 5890.0}, {"address": "839 N Harvey Ave", "type": "Single family", "cls": "204", "price": 642000, "seller": "Lucci Ashley Sade", "buyer": "Carrillo Anette Paola Elena Bravo", "village": 5136.0, "stco": 963.0, "total": 6099.0}, {"address": "1026 Baldwin Ln", "type": "Townhome", "cls": "295", "price": 645000, "seller": "Kells Stephen", "buyer": "Prescott Kathryn E", "village": 5160.0, "stco": 967.5, "total": 6127.5}, {"address": "944 N Humphrey Ave", "type": "Single family", "cls": "205", "price": 677000, "seller": "Ehmke Coraline Ada", "buyer": "Soviero Jacob", "village": 5416.0, "stco": 1015.5, "total": 6431.5}, {"address": "1042 S Kenilworth Ave", "type": "Single family", "cls": "203", "price": 680000, "seller": "Czerwinski Janet Tr", "buyer": "Boyle Nicholas", "village": 5440.0, "stco": 1020.0, "total": 6460.0}, {"address": "1125 Erie St", "type": "Vacant land", "cls": "201", "price": 700000, "seller": "1125 Erie Llc", "buyer": "1125 Erie Dev Llc", "village": 5600.0, "stco": 1050.0, "total": 6650.0}, {"address": "632 N Ridgeland Ave", "type": "Single family", "cls": "205", "price": 708000, "seller": "Mangan Edward L Tr", "buyer": "Khin Julia", "village": 5664.0, "stco": 1062.0, "total": 6726.0}, {"address": "833 S Scoville Ave", "type": "Single family", "cls": "205", "price": 715000, "seller": "Decoursey Carolyn G Tr", "buyer": "Ridley Chelsea", "village": 5720.0, "stco": 1072.5, "total": 6792.5}, {"address": "1135 Clarence Ave", "type": "Single family", "cls": "203", "price": 725000, "seller": "Wouters Hub Conley", "buyer": "Craney Danice", "village": 5800.0, "stco": 1087.5, "total": 6887.5}, {"address": "424 N Harvey Ave", "type": "Single family", "cls": "206", "price": 735000, "seller": "Volz Andrew", "buyer": "Kudlacz Christopher", "village": 5880.0, "stco": 1102.5, "total": 6982.5}, {"address": "733 S Oak Park Ave", "type": "Single family", "cls": "206", "price": 750000, "seller": "Thomas Roby Tr", "buyer": "Haynes Robert", "village": 6000.0, "stco": 1125.0, "total": 7125.0}, {"address": "934 N Kenilworth Ave", "type": "Single family", "cls": "205", "price": 750000, "seller": "Ciacciarelli Trust", "buyer": "Haughey Mark", "village": 6000.0, "stco": 1125.0, "total": 7125.0}, {"address": "908 Wenonah Ave", "type": "Single family", "cls": "203", "price": 750000, "seller": "Gee Richard", "buyer": "Abbas Shuja", "village": 6000.0, "stco": 1125.0, "total": 7125.0}, {"address": "410 Berkshire St", "type": "Single family", "cls": "204", "price": 750000, "seller": "Clark Patrick John", "buyer": "Liu Kevin K", "village": 6000.0, "stco": 1125.0, "total": 7125.0}, {"address": "732 S Kenilworth Ave", "type": "Single family", "cls": "205", "price": 775000, "seller": "Cohen Kevin B", "buyer": "Williamson Kurt D", "village": 6200.0, "stco": 1162.5, "total": 7362.5}, {"address": "803 S Maple Ave", "type": "Single family", "cls": "204", "price": 827000, "seller": "Schmidt Jennifer L", "buyer": "Drake Tyler", "village": 6616.0, "stco": 1240.5, "total": 7856.5}, {"address": "909 Linden Ave", "type": "Single family", "cls": "205", "price": 860000, "seller": "Hildebrand Katharine", "buyer": "Phillip Mark A", "village": 6880.0, "stco": 1290.0, "total": 8170.0}, {"address": "186 N Marion St", "type": "Townhome", "cls": "295", "price": 922500, "seller": "Plancon Amanda Louise", "buyer": "Lds Family Holdings Llc", "village": 7380.0, "stco": 1383.75, "total": 8763.75}, {"address": "147 N Euclid Ave", "type": "Unverified", "cls": "299/517", "price": 945000, "seller": "Jardine William Scott", "buyer": "Rottenberg Lori", "village": 7560.0, "stco": 1417.5, "total": 8977.5}, {"address": "217 Harrison St", "type": "Commercial", "cls": "517", "price": 950000, "seller": "Harrison St Ventures Llc", "buyer": "Salvage Haus Oak Pk Llc", "village": 7600.0, "stco": 1425.0, "total": 9025.0}, {"address": "639 N Ridgeland Ave", "type": "Single family", "cls": "206", "price": 975000, "seller": "Berg Emily", "buyer": "Gairo Sophie", "village": 7800.0, "stco": 1462.5, "total": 9262.5}, {"address": "305 N Ridgeland Ave", "type": "Single family", "cls": "206", "price": 995000, "seller": "Schwartz Lisa", "buyer": "Lizzio Giovanna", "village": 7960.0, "stco": 1492.5, "total": 9452.5}], "defaultSort": {"key": "price", "dir": -1}, "footerHTML": "<p><strong>Source:</strong> Oak Park property transfer listing (Wednesday Journal), 66 recorded sales, prices and names transcribed as published. Property type from the Cook County Assessor's Parcel Universe (2026) and Parcel Addresses open datasets, matched on street address.</p><p><strong>Classes:</strong> Single family = 202 to 206 (detached, by size). Townhome = 295 (individually owned townhome or row house). Condo = 299. Multifamily = 211 (2 to 6 unit apartment building). Commercial = 517 and 599. Vacant land = 201. The published listing drops unit numbers, so any address whose parcels are all class 299 is treated as a single condo unit sale.</p><p><strong>Unverified:</strong> 147 N Euclid Ave carries both a class 517 commercial parcel and 299 condo units at the same street address; the listing gives no unit, so it is excluded from the type medians.</p><p><strong>Rates and method:</strong> Village of Oak Park transfer tax $8.00 per $1,000 on the buyer (Village Code, Chapter 23A); Illinois $1.00 and Cook County $0.50 per $1,000 on the seller. Combined $9.50 per $1,000. Each tax is computed at the statutory rate on the published price; exempt transfers would owe a $30 Village fee instead. Medians are the midpoint of the sorted prices in each group.</p>"};
+const money = v => v==null ? '\u2013' : '$' + Math.round(v).toLocaleString('en-US');
+const fmts = {
+  text: v => v==null ? '\u2013' : v,
+  int: v => v==null ? '\u2013' : Math.round(v).toLocaleString('en-US'),
+  money,
+  pct1: v => v==null ? '\u2013' : v.toFixed(1) + '%',
+  pct2: v => v==null ? '\u2013' : v.toFixed(2) + '%'
+};
+let sort = {...CONFIG.defaultSort};
+document.getElementById('eyebrow').textContent = CONFIG.eyebrow;
+document.getElementById('title').textContent = CONFIG.title;
+document.getElementById('dek').textContent = CONFIG.dek;
+document.getElementById('footer').innerHTML = CONFIG.footerHTML;
+document.getElementById('subtable').innerHTML = CONFIG.subtableHTML || '';
+document.getElementById('stats').innerHTML = CONFIG.stats.map((s,i)=>`<div class="stat${i===1?' hi':''}"><div class="k">${s[0]}</div><div class="v">${s[1]}</div></div>`).join('');
+const hdr = document.getElementById('hdr');
+hdr.innerHTML = '<th class="rank">#</th>' + CONFIG.columns.map(c => `<th data-key="${c.key}" class="${c.fmt==='text'?'':'num'}" tabindex="0" title="${c.tooltip||''}">${c.label}<span class="arrow"></span></th>`).join('');
+hdr.querySelectorAll('th[data-key]').forEach(th => {
+  const go = () => { const k = th.dataset.key; if (sort.key===k) sort.dir *= -1; else { const c = CONFIG.columns.find(x=>x.key===k); sort = {key:k, dir: c.fmt==='text' ? 1 : -1}; } render(); };
+  th.addEventListener('click', go);
+  th.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } });
+});
+function render(){
+  const col = CONFIG.columns.find(c=>c.key===sort.key);
+  const rows = [...CONFIG.data].sort((a,b)=>{
+    const x=a[sort.key], y=b[sort.key];
+    if (x==null) return 1; if (y==null) return -1;
+    return (typeof x==='string' ? x.localeCompare(y) : x-y) * sort.dir;
+  });
+  const ext = {};
+  CONFIG.columns.filter(c=>c.extremes).forEach(c=>{
+    const vals = CONFIG.data.filter(r=>!r.excludeFromExtremes && r[c.key]!=null).map(r=>r[c.key]);
+    ext[c.key] = {min:Math.min(...vals), max:Math.max(...vals), mode:c.extremes};
+  });
+  document.getElementById('body').innerHTML = rows.map((r,i)=>'<tr class="'+(r.highlight?'hi':'')+'"><td class="rank">'+String(i+1).padStart(2,'0')+'</td>'+CONFIG.columns.map(c=>{
+    let cls = c.fmt==='text' ? '' : 'num';
+    const e = ext[c.key];
+    if (e && !r.excludeFromExtremes && r[c.key]!=null){
+      const isMax = r[c.key]===e.max, isMin = r[c.key]===e.min;
+      if (e.mode==='highGood'){ if(isMax) cls+=' best'; if(isMin) cls+=' worst'; }
+      else { if(isMin) cls+=' best'; if(isMax) cls+=' worst'; }
+    }
+    return `<td class="${cls}">${fmts[c.fmt](r[c.key])}</td>`;
+  }).join('')+'</tr>').join('');
+  hdr.querySelectorAll('th[data-key]').forEach(th=>{
+    const on = th.dataset.key===sort.key; th.classList.toggle('active',on);
+    th.querySelector('.arrow').textContent = on ? (sort.dir===1?'\u25B2':'\u25BC') : '';
+  });
+  document.getElementById('sortstate').textContent = `Sorted by ${col.label}, ${sort.dir===1?'ascending':'descending'} (${CONFIG.data.length} sales)`;
+  const sums = {};
+  CONFIG.columns.forEach(c=>{ if(c.fmt==='money') sums[c.key]=CONFIG.data.reduce((s,r)=>s+(r[c.key]||0),0); });
+  document.getElementById('foot').innerHTML = '<td></td>' + CONFIG.columns.map((c,i)=> i===0 ? '<td>Total</td>' : (c.fmt==='money' ? `<td class="num">${money(sums[c.key])}</td>` : '<td></td>')).join('');
+}
+render();
+</script>
+</body>
+</html>
