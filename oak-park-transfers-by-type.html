@@ -55,6 +55,17 @@ table.sub tbody td{padding:9px 14px}
 .panel .tick{font:10.5px 'IBM Plex Mono',monospace;fill:var(--muted)}
 .panel .dlab{font:600 10.5px 'IBM Plex Mono',monospace;fill:var(--ink)}
 .chartnote{font-size:13px;color:var(--muted);max-width:90ch;margin:6px 0 26px}
+.filters{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-end;border:1px solid var(--hair);background:#fff;padding:14px 16px;margin:0 0 14px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.f select,.f input{font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:5px 7px;border:1px solid var(--hair);background:var(--paper);color:var(--ink)}
+.f select:focus-visible,.f input:focus-visible{outline:2px solid var(--hi-edge);outline-offset:-1px}
+.f .pair{display:flex;gap:4px}
+.f input.txt{width:132px}
+.f input.num{width:104px}
+.f select.op{width:50px}
+#fclear{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 12px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer}
+#fclear:hover{background:var(--hi)}
 #tip{position:fixed;pointer-events:none;display:none;background:var(--ink);color:#fff;font:12px 'IBM Plex Mono',monospace;padding:6px 9px;border-radius:3px;z-index:10;white-space:nowrap}
 details.mtable{margin:0 0 34px;font-size:13px}
 details.mtable summary{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:8px}
@@ -77,7 +88,9 @@ footer p{margin:0 0 8px}
 <div class="charts" id="charts"></div>
 <p class="chartnote">Each sale is counted in the month of the Wednesday Journal listing it appeared in. The Village transfer tax total counts every sale of any type, so March and May 2026 are lifted by the $23.0M sale of 675 Lake St and the $5.9M sale of 221 Washington Blvd; the median is barely moved by them.</p>
 <details class="mtable"><summary>Monthly figures as a table</summary><div id="mtable"></div></details>
-<h2 class="subhead">Median sale price by housing type</h2><div id="subtable"></div><p class="sortstate" id="sortstate"></p>
+<h2 class="subhead">Median sale price by housing type</h2><div id="subtable"></div>
+<div class="filters" id="filters"></div>
+<p class="sortstate" id="sortstate"></p>
 <div class="scroll"><table id="t"><thead><tr id="hdr"></tr></thead><tbody id="body"></tbody><tfoot><tr id="foot"></tr></tfoot></table></div>
 <footer id="footer"></footer>
 </div>
@@ -158,9 +171,129 @@ hdr.querySelectorAll('th[data-key]').forEach(th => {
   th.addEventListener('click', go);
   th.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } });
 });
+// ---- filters ----
+const MONNAMES = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'};
+const TYPEORDER = ['Single family','Townhome','Condo','Multifamily (2-6 units)','Multifamily (7+ units)','Mixed use','Commercial','Vacant land','Other residential','Unverified'];
+const F = {month:'',mon:'',year:'',address:'',type:'',cls:'',seller:'',buyer:'',
+  price_op:'ge',price:'',village_op:'ge',village:'',stco_op:'ge',stco:'',total_op:'ge',total:''};
+const OPS = {ge:'≥', le:'≤', eq:'='};
+function distinct(fn){ return [...new Set(CONFIG.data.map(fn))]; }
+function buildFilters(){
+  const months = CONFIG.monthly.map(d=>`<option value="${d.m}">${d.label.replace(' ', " '")}</option>`).join('');
+  const mons = [...new Set(CONFIG.data.map(r=>r.month.slice(5)))].sort()
+    .map(m=>`<option value="${m}">${MONNAMES[m]}</option>`).join('');
+  const years = [...new Set(CONFIG.data.map(r=>r.month.slice(0,4)))].sort()
+    .map(y=>`<option value="${y}">${y}</option>`).join('');
+  const types = TYPEORDER.filter(t=>CONFIG.data.some(r=>r.type===t))
+    .map(t=>`<option value="${t}">${t}</option>`).join('');
+  const clss = distinct(r=>r.cls).sort()
+    .map(c=>`<option value="${c}">${c}</option>`).join('');
+  const sel = (id,label,opts,all) => `<div class="f"><label for="${id}">${label}</label><select id="${id}"><option value="">${all}</option>${opts}</select></div>`;
+  const txt = (id,label,ph) => `<div class="f"><label for="${id}">${label}</label><input class="txt" id="${id}" type="text" placeholder="${ph}"></div>`;
+  const num = (id,label) => `<div class="f"><label for="${id}">${label}</label><div class="pair"><select class="op" id="${id}_op" aria-label="${label} comparison"><option value="ge">≥</option><option value="le">≤</option><option value="eq">=</option></select><input class="num" id="${id}" type="number" min="0" step="1000" placeholder="any"></div></div>`;
+  document.getElementById('filters').innerHTML =
+    sel('f_month','Month + year',months,'All') +
+    sel('f_mon','Month (any yr)',mons,'All') +
+    sel('f_year','Year',years,'All') +
+    txt('f_address','Address','e.g. Kenilworth') +
+    sel('f_type','Type',types,'All types') +
+    sel('f_cls','Class',clss,'All') +
+    num('f_price','Price') +
+    txt('f_seller','Seller','name') +
+    txt('f_buyer','Buyer','name') +
+    num('f_village','Village tax') +
+    num('f_stco','State + County') +
+    num('f_total','Total stamps') +
+    '<div class="f"><label>&nbsp;</label><button id="fclear" type="button">Clear filters</button></div>';
+  const bind = (el, key, ev) => el.addEventListener(ev, e => { F[key]=e.target.value; render(); });
+  bind(document.getElementById('f_month'),'month','change');
+  bind(document.getElementById('f_mon'),'mon','change');
+  bind(document.getElementById('f_year'),'year','change');
+  bind(document.getElementById('f_address'),'address','input');
+  bind(document.getElementById('f_type'),'type','change');
+  bind(document.getElementById('f_cls'),'cls','change');
+  bind(document.getElementById('f_seller'),'seller','input');
+  bind(document.getElementById('f_buyer'),'buyer','input');
+  ['price','village','stco','total'].forEach(k=>{
+    bind(document.getElementById('f_'+k), k, 'input');
+    bind(document.getElementById('f_'+k+'_op'), k+'_op', 'change');
+  });
+  document.getElementById('fclear').addEventListener('click', ()=>{
+    Object.assign(F, {month:'',mon:'',year:'',address:'',type:'',cls:'',seller:'',buyer:'',
+      price_op:'ge',price:'',village_op:'ge',village:'',stco_op:'ge',stco:'',total_op:'ge',total:''});
+    applyFtoControls(); render();
+  });
+}
+function applyFtoControls(){
+  document.getElementById('f_month').value=F.month;
+  document.getElementById('f_mon').value=F.mon;
+  document.getElementById('f_year').value=F.year;
+  document.getElementById('f_address').value=F.address;
+  document.getElementById('f_type').value=F.type;
+  document.getElementById('f_cls').value=F.cls;
+  document.getElementById('f_seller').value=F.seller;
+  document.getElementById('f_buyer').value=F.buyer;
+  ['price','village','stco','total'].forEach(k=>{
+    document.getElementById('f_'+k).value=F[k];
+    document.getElementById('f_'+k+'_op').value=F[k+'_op'];
+  });
+}
+function cmp(v, op, x){ return op==='le' ? v<=x : op==='eq' ? Math.round(v)===Math.round(x) : v>=x; }
+function matches(r){
+  if (F.month && r.month!==F.month) return false;
+  if (F.mon && r.month.slice(5)!==F.mon) return false;
+  if (F.year && r.month.slice(0,4)!==F.year) return false;
+  if (F.address && !r.address.toLowerCase().includes(F.address.trim().toLowerCase())) return false;
+  if (F.type && r.type!==F.type) return false;
+  if (F.cls && r.cls!==F.cls) return false;
+  if (F.seller && !r.seller.toLowerCase().includes(F.seller.trim().toLowerCase())) return false;
+  if (F.buyer && !r.buyer.toLowerCase().includes(F.buyer.trim().toLowerCase())) return false;
+  for (const k of ['price','village','stco','total']){
+    if (F[k]!=='' && !isNaN(parseFloat(F[k])) && !cmp(r[k], F[k+'_op'], parseFloat(F[k]))) return false;
+  }
+  return true;
+}
+function syncURL(){
+  const p = new URLSearchParams();
+  if (F.month) p.set('month',F.month);
+  if (F.mon) p.set('mon',F.mon);
+  if (F.year) p.set('year',F.year);
+  if (F.address.trim()) p.set('address',F.address.trim());
+  if (F.type) p.set('type',F.type);
+  if (F.cls) p.set('class',F.cls);
+  if (F.seller.trim()) p.set('seller',F.seller.trim());
+  if (F.buyer.trim()) p.set('buyer',F.buyer.trim());
+  for (const k of ['price','village','stco','total']){
+    if (F[k]!==''){ p.set(k, F[k]); if (F[k+'_op']!=='ge') p.set(k+'_op', F[k+'_op']); }
+  }
+  if (sort.key!==CONFIG.defaultSort.key || sort.dir!==CONFIG.defaultSort.dir){
+    p.set('sort',sort.key); if (sort.dir===1) p.set('dir','asc');
+  }
+  const qs = p.toString();
+  history.replaceState(null,'', qs ? '?'+qs : location.pathname);
+}
+function initFromURL(){
+  const p = new URLSearchParams(location.search);
+  const g = (k,def)=> p.get(k)||def;
+  const monthsOK = new Set(CONFIG.monthly.map(d=>d.m));
+  if (monthsOK.has(g('month',''))) F.month=p.get('month');
+  if (/^(0[1-9]|1[0-2])$/.test(g('mon',''))) F.mon=p.get('mon');
+  if (/^20\d\d$/.test(g('year',''))) F.year=p.get('year');
+  F.address=g('address',''); F.seller=g('seller',''); F.buyer=g('buyer','');
+  if (TYPEORDER.includes(g('type',''))) F.type=p.get('type');
+  if (distinct(r=>r.cls).includes(g('class',''))) F.cls=p.get('class');
+  for (const k of ['price','village','stco','total']){
+    const v=g(k,''); if (v!=='' && !isNaN(parseFloat(v))) F[k]=v;
+    const o=g(k+'_op','ge'); if (['ge','le','eq'].includes(o)) F[k+'_op']=o;
+  }
+  const s=g('sort','');
+  if (CONFIG.columns.some(c=>c.key===s)){ sort={key:s, dir: p.get('dir')==='asc'?1:-1}; }
+  applyFtoControls();
+}
 function render(){
+  syncURL();
   const col = CONFIG.columns.find(c=>c.key===sort.key);
-  const rows = [...CONFIG.data].sort((a,b)=>{
+  const rows = CONFIG.data.filter(matches).sort((a,b)=>{
     const x=a[sort.key], y=b[sort.key];
     if (x==null) return 1; if (y==null) return -1;
     return (typeof x==='string' ? x.localeCompare(y) : x-y) * sort.dir;
@@ -184,11 +317,14 @@ function render(){
     const on = th.dataset.key===sort.key; th.classList.toggle('active',on);
     th.querySelector('.arrow').textContent = on ? (sort.dir===1?'\u25B2':'\u25BC') : '';
   });
-  document.getElementById('sortstate').textContent = `Sorted by ${col.label}, ${sort.dir===1?'ascending':'descending'} (${CONFIG.data.length} sales)`;
+  const filtered = rows.length !== CONFIG.data.length;
+  document.getElementById('sortstate').textContent = `Sorted by ${col.label}, ${sort.dir===1?'ascending':'descending'} (${filtered ? rows.length+' of '+CONFIG.data.length : CONFIG.data.length} sales)`;
   const sums = {};
-  CONFIG.columns.forEach(c=>{ if(c.fmt==='money') sums[c.key]=CONFIG.data.reduce((s,r)=>s+(r[c.key]||0),0); });
-  document.getElementById('foot').innerHTML = '<td></td>' + CONFIG.columns.map((c,i)=> i===0 ? '<td>Total</td>' : (c.fmt==='money' ? `<td class="num">${money(sums[c.key])}</td>` : '<td></td>')).join('');
+  CONFIG.columns.forEach(c=>{ if(c.fmt==='money') sums[c.key]=rows.reduce((s,r)=>s+(r[c.key]||0),0); });
+  document.getElementById('foot').innerHTML = '<td></td>' + CONFIG.columns.map((c,i)=> i===0 ? `<td>${filtered?'Total (filtered)':'Total'}</td>` : (c.fmt==='money' ? `<td class="num">${money(sums[c.key])}</td>` : '<td></td>')).join('');
 }
+buildFilters();
+initFromURL();
 render();
 </script>
 </body>
